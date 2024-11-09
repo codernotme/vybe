@@ -60,7 +60,15 @@
   }
 }
 
+@font-face {
+  font-family: 'SpicyRice';
+  src: url('../../public/fonts/SpicyRice-Regular.ttf');
+  
+}
 
+.logo{
+    font-family: 'SpicyRice';
+}
 
 @layer base {
   * {

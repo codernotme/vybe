@@ -83,7 +83,7 @@ export default function VybeLandingPage() {
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-wide mb-6">
             Connect, Collaborate, Create on{" "}
             <motion.span
-              className="text-[#ff3b3f] inline-block"
+              className="text-[#ff3b3f] inline-block logo"
               animate={{ rotate: [0, 5, 0, -5, 0] }}
               transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 5 }}
             >

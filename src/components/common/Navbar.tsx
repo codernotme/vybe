@@ -43,7 +43,7 @@ export default function Navbar() {
           {/* Logo */}
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link href="/" className="flex-shrink-0">
-              <h1 className="text-2xl font-bold md:text-3xl">VYBE </h1>
+              <h1 className="text-2xl font-bold md:text-3xl logo">VYBE </h1>
             </Link>
           </motion.div>
 
