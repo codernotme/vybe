@@ -12,7 +12,7 @@ import Request from "./Request";
 import { Badge } from "../ui/badge";
 import styled from "styled-components";
 import { Button } from "@nextui-org/button";
-import { Modal, ModalBody, ModalHeader, ModalFooter } from "@nextui-org/modal";
+import { Modal, ModalBody, ModalHeader, ModalFooter, ModalContent } from "@nextui-org/modal";
 import { useDisclosure } from "@nextui-org/react";
 function Notification() {
   const requests = useQuery(api.requests.get) || "";
@@ -42,7 +42,7 @@ function Notification() {
         {/* HoverCardTrigger for hover interaction */}
         <HoverCardTrigger>
           <StyledWrapper>
-            <Button onPress={open}>
+            <Button onPress={onOpen}>
               <div className="relative align-middle cursor-pointer text-secondary-foreground">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -90,12 +90,14 @@ function Notification() {
 
       {/* Modal for click interaction */}
       <Modal
-        closeButton
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        aria-labelledby="modal-title"
+        isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false} isKeyboardDismissDisabled={true}
+        placement="center"
+        className="w-full sm:max-w-sm md:max-w-md lg:max-w-lg max-h-72 overflow-auto p-4 bg-background shadow-lg rounded-md"
       >
-        <ModalHeader>Notifications</ModalHeader>
+        <ModalContent>
+        {(onClose) => (
+          <>
+        <ModalHeader className="flex flex-col gap-1">Notifications</ModalHeader>
         <ModalBody>
           {requests ? (
             requests.length > 0 ? (
@@ -116,8 +118,11 @@ function Notification() {
           )}
         </ModalBody>
         <ModalFooter>
-          <Button onClick={handleModalClose}>Close</Button>
+          <Button onPress={onClose} color="danger" variant="light">Close</Button>
         </ModalFooter>
+          </>
+        )}
+          </ModalContent>
       </Modal>
     </main>
   );
