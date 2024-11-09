@@ -1,0 +1,53 @@
+[
+  {
+    "id": 1,
+    "userName": "Shaitan Baccha",
+    "userAvatar": "/images/image1.jpg",
+    "stories": [
+      {
+        "id": 101,
+        "imageUrl": "/images/image1.jpg",
+        "title": "John's First Story"
+      },
+      {
+        "id": 102,
+        "imageUrl": "/images/image2.jpg",
+        "title": "John's Second Story"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "userName": "Chubuli ladki",
+    "userAvatar": "/images/image3.jpg",
+    "stories": [
+      {
+        "id": 201,
+        "imageUrl": "/images/image4.jpg",
+        "title": "Jane's First Story"
+      },
+      {
+        "id": 202,
+        "imageUrl": "/images/dum2.jpg",
+        "title": "Jane's Second Story"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "userName": "Romeo Majnu",
+    "userAvatar": "/images/image5.jpg",
+    "stories": [
+      {
+        "id": 301,
+        "imageUrl": "/images/dum1.jpg",
+        "title": "Bob's First Story"
+      },
+      {
+        "id": 302,
+        "imageUrl": "/images/dum3.jpg",
+        "title": "Bob's Second Story"
+      }
+    ]
+  }
+]
