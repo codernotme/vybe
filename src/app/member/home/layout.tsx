@@ -10,7 +10,6 @@ export default function RootLayout({
     <>
       <div className="w-full">
         {children}
-        {/*<SideNavR />*/}
       </div>
     </>
   );

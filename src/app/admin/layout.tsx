@@ -1,4 +1,3 @@
-import Navbar from "@/components/common/Navbar";
 import SidebarWrapper from "@/components/common/SidebarWrapper";
 import SideNav from "@/components/common/SideNav";
 
@@ -13,7 +12,6 @@ export default function RootLayout({
   return (
     <>
       <main className="w-full justify-between min-h-screen">
-        <Navbar />
         <SidebarWrapper>
           <SideNav />
           {children}

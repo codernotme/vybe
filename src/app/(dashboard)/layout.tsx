@@ -10,7 +10,6 @@ export default function RootLayout({
 }) {
   return (
     <main className="w-full justify-between h-full flex flex-col gap-4">
-      <Navbar />
       {children}
     </main>
   );
