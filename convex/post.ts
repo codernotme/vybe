@@ -2,6 +2,23 @@ import { ConvexError, v } from "convex/values";
 import { mutation } from "./_generated/server";
 import { getUserByClerkId } from "./_utils";
 
+
+export const deletePostByAdmin = mutation({
+  args: {
+    postId: v.id("posts"),
+  },
+  handler: async (ctx, { postId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized access. Please log in.");
+    }
+    const role = identity.role;
+    if (role !== 'admin' && role !== 'moderator') throw new Error("Permission denied");
+    await ctx.db.delete(postId);
+  },
+});
+
+
 // Mutation to create a new post
 export const create = mutation({
   // Expected arguments for creating a post

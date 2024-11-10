@@ -4,16 +4,18 @@ import { v } from 'convex/values';
 export default defineSchema({
     // Define the "users" table to store user information
     users: defineTable({
-        username: v.string(),  // Username of the user
-        email: v.string(),     // Email address of the user
-        imageUrl: v.string(),  // URL of the user's profile image
-        clerkId: v.string(),   // Unique ID from Clerk authentication
-        password: v.string(),  // Hashed password (note: typically hashed passwords are stored)
-        name: v.string()       // Full name of the user
-    })
-    .index("by_username", ["username"])
-    .index("by_clerkId", ["clerkId"])
-    .index("by_email", ["email"]),
+        username: v.string(),
+        email: v.string(),
+        imageUrl: v.string(),
+        clerkId: v.string(),
+        password: v.string(),
+        name: v.string(),
+        githubId: v.optional(v.string()),
+        role: v.string() // 'admin', 'moderator', 'user'
+      })
+      .index("by_username", ["username"])
+      .index("by_clerkId", ["clerkId"])
+      .index("by_email", ["email"]),
 
     // Define the "requests" table to manage friend requests between users
     requests: defineTable({

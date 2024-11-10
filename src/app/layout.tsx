@@ -10,6 +10,9 @@ import { Toaster } from "@/components/ui/sonner";
 import "animate.css";
 import { useEffect } from "react";
 import { Providers } from "./providers";
+import Navbar from "@/components/common/Navbar";
+import SidebarWrapper from "@/components/common/SidebarWrapper";
+import SideNav from "@/components/common/SideNav";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -79,9 +82,11 @@ export default function RootLayout({
                 {/* Display different content based on user's authentication status */}
                 <SignedIn>
                   {/* Main content for signed-in users */}
-                  <main>
-                    {children} {/* Render children components */}
-                  </main>
+                  <Navbar />
+                  <SidebarWrapper>
+                    <SideNav />
+                    {children}
+                  </SidebarWrapper>
                 </SignedIn>
                 <SignedOut>
                   {/* Redirect to authentication page for signed-out users */}

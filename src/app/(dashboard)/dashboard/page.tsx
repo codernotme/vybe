@@ -45,7 +45,11 @@ export default function UserProfileDashboard() {
     try {
       await update({
         clerkId: user?.id || "",
-        ...userInfo
+        ...userInfo,
+        role: "user", // or any default role
+        imageUrl: user?.imageUrl || "",
+        password: "", // or any default password
+        githubId: "", // or any default githubId
       });
       setIsEditing(false);
     } catch (err) {

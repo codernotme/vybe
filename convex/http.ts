@@ -63,12 +63,14 @@ const handleClerkWebhook = httpAction(async (ctx, req) => {
           // If the user doesn't exist, create a new user in the database
           console.log("Creating new user with ID", event.data.id);
           await ctx.runMutation(internal.user.create, {
-            username: event.data.username ?? '', // Use the username from the event data or an empty string
-            imageUrl: event.data.image_url, // User's profile image URL
+            username: event.data.username ?? '', // Use username from event data or default to an empty string
+            imageUrl: event.data.image_url ?? '', // Use the image URL or default to an empty string
             clerkId: event.data.id, // Clerk ID for the user
-            email: event.data.email_addresses[0]?.email_address || '', // Use the first email address
-            password: '', // Handle password securely (empty in this case)
-            name: `${event.data.first_name ?? ''} ${event.data.last_name ?? ''}`, // Combine first and last name
+            email: event.data.email_addresses?.[0]?.email_address ?? '', // Use the first email address or default
+            password: '', // Password should be securely handled (empty here)
+            name: `${event.data.first_name ?? ''} ${event.data.last_name ?? ''}`.trim(), // Trim spaces if names are missing
+            githubId: "", // Optional GitHub ID (if available)
+            role: 'member' // Default role to 'user' if not provided
           });
         }
         break;

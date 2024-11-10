@@ -2,6 +2,9 @@ import { ConvexError, v } from "convex/values";
 import { query } from "./_generated/server";
 import { getUserByClerkId } from "./_utils";
 
+
+
+
 // Define a query to get both the current user's and their friends' posts
 export const get = query({
   args: {},

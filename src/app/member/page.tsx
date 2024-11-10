@@ -3,6 +3,6 @@
 import React from "react";
 import Home from "./home/page";
 
-export default function main() {
+export default function MemberPage() {
   return <Home />;
 }

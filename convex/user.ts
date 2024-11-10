@@ -4,12 +4,14 @@ import { internalQuery, internalMutation } from "./_generated/server";
 // Mutation to create a new user in the database
 export const create = internalMutation({
     args: {
-        username: v.string(),   // Username of the new user
-        password: v.string(),   // Password for the new user (should be hashed before storing)
-        email: v.string(),      // Email address of the new user
-        name: v.string(),       // Full name of the new user
-        imageUrl: v.string(),   // URL of the user's profile image
-        clerkId: v.string()     // Unique identifier from Clerk authentication
+        username: v.string(),
+        email: v.string(),
+        imageUrl: v.string(),
+        clerkId: v.string(),
+        password: v.string(),
+        name: v.string(),
+        githubId: v.optional(v.string()),
+        role: v.string()
     },
     handler: async (ctx, args) => {
         // Insert the new user record into the "users" table

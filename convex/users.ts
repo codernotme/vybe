@@ -5,11 +5,15 @@ import { getUserByClerkId } from "./_utils";
 // Mutation to update user data by Clerk ID
 export const update = mutation({
   args: {
-    clerkId: v.string(), // The Clerk ID of the user to be updated
-    username: v.optional(v.string()), // Optional new username
-    email: v.optional(v.string()), // Optional new email
-    name: v.optional(v.string()), // Optional new name
-    imageUrl: v.optional(v.string()) // Optional new image URL
+    username: v.string(),
+    email: v.string(),
+    imageUrl: v.string(),
+    clerkId: v.string(),
+    password: v.string(),
+    name: v.string(),
+    githubId: v.optional(v.string()),
+    role: v.string()
+    
   },
   handler: async (ctx, args) => {
     // Get the user identity from the auth context
@@ -76,7 +80,10 @@ export const get = query({
       name: user.name,
       username: user.username,
       email: user.email,
-      imageUrl: user.imageUrl
+      imageUrl: user.imageUrl,
+      role: user.role,
+      githubId: user.githubId,
+      clerkId: user.clerkId
     };
   }
 });
