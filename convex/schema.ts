@@ -10,12 +10,14 @@ export default defineSchema({
         clerkId: v.string(),
         password: v.string(),
         name: v.string(),
-        githubId: v.optional(v.string()),
-        role: v.string() // 'admin', 'moderator', 'user'
+        githubId: v.optional(v.string()), // Store GitHub ID
+        githubUsername: v.optional(v.string()), // GitHub username
+        role: v.string() // 'admin', 'mentor', 'member', 'tech', 'community'
       })
       .index("by_username", ["username"])
       .index("by_clerkId", ["clerkId"])
-      .index("by_email", ["email"]),
+      .index("by_email", ["email"])
+      .index("by_githubId", ["githubId"]),
 
     // Define the "requests" table to manage friend requests between users
     requests: defineTable({
