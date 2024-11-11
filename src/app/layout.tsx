@@ -85,7 +85,9 @@ export default function RootLayout({
                   <Navbar />
                   <SidebarWrapper>
                     <SideNav />
+                    <main className="w-full justify-between min-h-screen">
                     {children}
+                    </main>
                   </SidebarWrapper>
                 </SignedIn>
                 <SignedOut>
