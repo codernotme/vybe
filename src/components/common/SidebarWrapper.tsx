@@ -1,5 +1,3 @@
-import Navbar from "./Navbar";
-import SideNav from "./SideNav";
 import React from "react";
 
 type Props = React.PropsWithChildren<{}>;

@@ -1,11 +1,10 @@
-import React from 'react'
+import React from "react";
+import Home from "../home/page";
 
-type Props = {}
+type Props = {};
 
 const TechPage = (props: Props) => {
-  return (
-    <div>TechPage</div>
-  )
-}
+  return <Home />;
+};
 
-export default TechPage
+export default TechPage;

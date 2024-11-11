@@ -105,13 +105,13 @@ const GroupDialog = () => {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Create Hive</p>
+            <p>Create GC</p>
           </TooltipContent>
         </Tooltip>
 
         <DialogContent className="block">
           <DialogHeader>
-            <DialogTitle>Create Hive</DialogTitle>
+            <DialogTitle>Create GC</DialogTitle>
             <DialogDescription>
               Create a new hive by adding friends.
             </DialogDescription>
@@ -128,7 +128,7 @@ const GroupDialog = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Hive Name</FormLabel>
+                    <FormLabel>GC Name</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter Hive name..." {...field} />
                     </FormControl>
@@ -211,7 +211,7 @@ const GroupDialog = () => {
               {/* Submit Button */}
               <DialogFooter>
                 <Button disabled={pending} type="submit" className="w-full">
-                  Create Hive <ArrowRightIcon className="ml-2" />
+                  Create GC <ArrowRightIcon className="ml-2" />
                 </Button>
               </DialogFooter>
             </form>

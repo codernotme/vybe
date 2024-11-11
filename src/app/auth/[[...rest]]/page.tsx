@@ -34,6 +34,12 @@ export default function VybeLandingPage() {
   const featuresY = useTransform(scrollYProgress, [0, 0.5], ["20%", "0%"])
   const featuresOpacity = useTransform(scrollYProgress, [0, 0.3], [0, 1])
 
+  const testimonials = [
+    { name: "Alex Thompson", role: "PSIT Student", text: "VYBE has transformed how I collaborate with peers!" },
+    { name: "Sarah Kesarwani", role: "Mentor", text: "It's a game-changer in education." },
+    { name: "Rakesh Kumar", role: "PSIT Alumni", text: "I wish VYBE existed during my student years." },
+  ]
+
   useEffect(() => {
     setMounted(true)
 
@@ -43,13 +49,7 @@ export default function VybeLandingPage() {
     window.addEventListener("scroll", handleScroll)
 
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  const testimonials = [
-    { name: "Alex Johnson", role: "PSIT Student", text: "VYBE has transformed how I collaborate with peers!" },
-    { name: "Sarah Lee", role: "Mentor", text: "It's a game-changer in education." },
-    { name: "Mike Chen", role: "PSIT Alumni", text: "I wish VYBE existed during my student years." },
-  ]
+  }, [testimonials.length])
 
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
 
@@ -58,7 +58,7 @@ export default function VybeLandingPage() {
       setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
     }, 5000)
     return () => clearInterval(timer)
-  }, [])
+  }, [testimonials.length])
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
 

@@ -4,7 +4,7 @@ import {
   HomeIcon,
   ChatBubbleIcon,
   VideoIcon,
-  AvatarIcon
+  AvatarIcon,
 } from "@radix-ui/react-icons";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
@@ -16,22 +16,22 @@ export const useNavigation = () => {
     () => [
       {
         name: "Home",
-        href: "/home",
+        href: "/",
         icon: <HomeIcon className="h-6 w-6" />,
-        active: pathname === "/home"
+        active: pathname === "/",
       },
       {
         name: "Friends",
         href: "/friends",
         icon: <AvatarIcon className="h-6 w-6" />,
-        active: pathname === "/friends"
+        active: pathname === "/friends",
       },
       {
         name: "Watch",
         href: "/watch",
         icon: <VideoIcon className="h-6 w-6" />,
-        active: pathname === "/watch"
-      }
+        active: pathname === "/watch",
+      },
     ],
     [pathname]
   );

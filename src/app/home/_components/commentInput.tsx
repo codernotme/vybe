@@ -11,20 +11,20 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@nextui-org/input";
 import { Button } from "@/components/ui/button";
 import { SendHorizonalIcon } from "lucide-react";
-import { api } from "../../../../../convex/_generated/api";
-import { Id } from "../../../../../convex/_generated/dataModel";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
 
 // Define the validation schema for the chat input
 const chatSchema = z.object({
   type: z.literal("text"),
   content: z.string().min(1, {
-    message: "Please enter a message"
-  })
+    message: "Please enter a message",
+  }),
 });
 
 // Define Props type correctly
@@ -41,8 +41,8 @@ const ChatInput: React.FC<Props> = ({ postId }) => {
     resolver: zodResolver(chatSchema),
     defaultValues: {
       type: "text",
-      content: ""
-    }
+      content: "",
+    },
   });
 
   const handleInputChange = (
@@ -57,7 +57,7 @@ const ChatInput: React.FC<Props> = ({ postId }) => {
       // Call the mutation to create a comment and increment the comments count
       await createComment({
         postId,
-        content: values.content
+        content: values.content,
       });
       form.reset(); // Reset the form upon successful comment submission
       toast.success("Comment added successfully!"); // Notify the user of success

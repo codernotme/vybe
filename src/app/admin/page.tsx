@@ -1,11 +1,14 @@
-import React from 'react'
+import React from "react";
+import Home from "../home/page";
 
-type Props = {}
+type Props = {};
 
 const AdminPage = (props: Props) => {
   return (
-    <div>AdminPage</div>
-  )
-}
+    <div>
+      <Home />
+    </div>
+  );
+};
 
-export default AdminPage
+export default AdminPage;

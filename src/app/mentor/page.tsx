@@ -1,11 +1,14 @@
-import React from 'react'
+import React from "react";
+import Home from "../home/page";
 
-type Props = {}
+type Props = {};
 
 const MentorView = (props: Props) => {
   return (
-    <div>MentorView</div>
-  )
-}
+    <div>
+      <Home />
+    </div>
+  );
+};
 
-export default MentorView
+export default MentorView;

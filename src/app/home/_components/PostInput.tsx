@@ -8,14 +8,14 @@ import {
   Card,
   CardContent,
   CardFooter,
-  CardHeader
+  CardHeader,
 } from "@/components/ui/card";
 import { Image } from "@nextui-org/image";
-import { api } from "../../../../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Id } from "../../../../../convex/_generated/dataModel";
+import { Id } from "../../../../convex/_generated/dataModel";
 import CommentInput from "./commentInput";
-import {  Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Textarea } from "@nextui-org/input";
 import { toast } from "sonner";
 import styled from "styled-components";
@@ -40,7 +40,6 @@ const ExpandableText = ({ content }: { content: string }) => {
     </p>
   );
 };
-
 
 export default function PostInput() {
   const posts = useQuery(api.posts.get);
@@ -80,8 +79,8 @@ export default function PostInput() {
     accept: {
       "image/*": [".jpg", ".jpeg", ".png"],
       "video/*": [".mp4", ".mov"],
-      "gif/*": [".gif"]
-    }
+      "gif/*": [".gif"],
+    },
   });
 
   const handlePost = async () => {
@@ -109,7 +108,7 @@ export default function PostInput() {
         content: postText ?? undefined,
         imageUrl: selectedImage ?? undefined,
         videoUrl: selectedVideo ?? undefined,
-        gifUrl: selectedGif ?? undefined
+        gifUrl: selectedGif ?? undefined,
       });
 
       toast.success("Post created successfully!", {
@@ -117,8 +116,8 @@ export default function PostInput() {
         style: {
           borderRadius: "10px",
           background: "#333",
-          color: "#fff"
-        }
+          color: "#fff",
+        },
       });
       setSelectedImage(null);
       setSelectedVideo(null);
@@ -131,7 +130,6 @@ export default function PostInput() {
       setIsPosting(false);
     }
   };
-
 
   if (!posts) {
     return (

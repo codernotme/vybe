@@ -1,11 +1,14 @@
-import React from 'react'
+import React from "react";
+import Home from "../home/page";
 
-type Props = {}
+type Props = {};
 
 const CommunityPage = (props: Props) => {
   return (
-    <div>CommunityPage</div>
-  )
-}
+    <div>
+      <Home />
+    </div>
+  );
+};
 
-export default CommunityPage
+export default CommunityPage;

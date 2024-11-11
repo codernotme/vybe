@@ -8,19 +8,19 @@ import {
   Card,
   CardContent,
   CardFooter,
-  CardHeader
+  CardHeader,
 } from "@/components/ui/card";
 import { Image } from "@nextui-org/image";
-import { api } from "../../../../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Id } from "../../../../../convex/_generated/dataModel";
+import { Id } from "../../../../convex/_generated/dataModel";
 import CommentInput from "./commentInput";
 import { Heart, Share2, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import Link from "next/link";
 import { ChatBubbleIcon } from "@radix-ui/react-icons";
@@ -49,7 +49,7 @@ const ExpandableText = ({ content }: { content: string }) => {
 const CommentSection = ({
   postId,
   isVisible,
-  handleDeleteComment
+  handleDeleteComment,
 }: {
   postId: Id<"posts">;
   isVisible: boolean;
@@ -99,9 +99,9 @@ export default function PostPage() {
   const posts = useQuery(api.posts.get);
   const deletePost = useMutation(api.post.deletePost);
   const deleteComment = useMutation(api.post.deleteComment);
-  const [expandedPostId, setExpandedPostId] = useState<Id<"posts"> | null>(null);
-
-
+  const [expandedPostId, setExpandedPostId] = useState<Id<"posts"> | null>(
+    null
+  );
 
   const handleDeleteComment = async (commentId: Id<"comments">) => {
     try {
@@ -143,7 +143,7 @@ export default function PostPage() {
   }
   return (
     <div className="justify-between items-center mx-auto max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl space-y-6 p-4 top-0">
-{posts.map((post: any) => (
+      {posts.map((post: any) => (
         <Card
           key={post.post._id}
           className={` bg-background overflow-hidden max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-2 items-center justify-between shadow-lg rounded-lg `}
@@ -159,7 +159,7 @@ export default function PostPage() {
                 {new Date(post.post._creationTime).toLocaleDateString("en-US", {
                   day: "numeric",
                   month: "short",
-                  year: "numeric"
+                  year: "numeric",
                 })}
               </p>
             </div>
@@ -340,7 +340,6 @@ export default function PostPage() {
           />
         </Card>
       ))}
-
     </div>
-    );
+  );
 }
