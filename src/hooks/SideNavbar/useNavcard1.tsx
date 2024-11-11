@@ -4,6 +4,8 @@ import {
   CalendarIcon,
   HomeIcon,
   AvatarIcon,
+  BackpackIcon,
+  VideoIcon,
 } from "@radix-ui/react-icons";
 import { NewspaperIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -43,6 +45,18 @@ export const useNavigation = () => {
         href: "/newsletter",
         icon: <NewspaperIcon className="h-6 w-6" />,
         active: pathname === "/tech/newsletter",
+      },
+      {
+        name: "Mentor Connect",
+        href: "/mentor/students",
+        icon: <BackpackIcon className="h-6 w-6" />,
+        active: pathname === "/mentor/students",
+      },
+      {
+        name: "Watch",
+        href: "/watch",
+        icon: <VideoIcon className="h-6 w-6" />,
+        active: pathname === "/watch",
       },
     ],
     [pathname]

@@ -25,6 +25,7 @@ import type * as post from "../post.js";
 import type * as posts from "../posts.js";
 import type * as request from "../request.js";
 import type * as requests from "../requests.js";
+import type * as roles from "../roles.js";
 import type * as updateRoles from "../updateRoles.js";
 import type * as user from "../user.js";
 import type * as users from "../users.js";
@@ -51,6 +52,7 @@ declare const fullApi: ApiFromModules<{
   posts: typeof posts;
   request: typeof request;
   requests: typeof requests;
+  roles: typeof roles;
   updateRoles: typeof updateRoles;
   user: typeof user;
   users: typeof users;
