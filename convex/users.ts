@@ -11,9 +11,8 @@ export const update = mutation({
     clerkId: v.string(),
     password: v.string(),
     name: v.string(),
-    githubId: v.optional(v.string()),
-    role: v.string()
-    
+    githubUsername: v.optional(v.string()),
+    role: v.string(),
   },
   handler: async (ctx, args) => {
     // Get the user identity from the auth context
@@ -25,7 +24,8 @@ export const update = mutation({
     }
 
     // Query the "users" table using the "by_clerkId" index to find the user
-    const user = await ctx.db.query("users")
+    const user = await ctx.db
+      .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
       .unique();
 
@@ -44,7 +44,7 @@ export const update = mutation({
 
     // Return the updated user data
     return { ...user, ...updatedFields };
-  }
+  },
 });
 
 // Query to get user data by Clerk ID
@@ -57,13 +57,13 @@ export const get = query({
     if (!identity) {
       throw new ConvexError("Unauthorized");
     }
-  
+
     // Fetch the user details from the database using Clerk ID
     const currentUser = await getUserByClerkId({
       ctx,
-      clerkId: identity.subject
+      clerkId: identity.subject,
     });
-  
+
     // If the user is not found, throw a user not found error
     if (!currentUser) {
       throw new ConvexError("User not found");
@@ -82,8 +82,8 @@ export const get = query({
       email: user.email,
       imageUrl: user.imageUrl,
       role: user.role,
-      githubId: user.githubId,
-      clerkId: user.clerkId
+      githubUsername: user.githubUsername,
+      clerkId: user.clerkId,
     };
-  }
+  },
 });

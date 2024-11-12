@@ -10,7 +10,7 @@ export const create = internalMutation({
         clerkId: v.string(),
         password: v.string(),
         name: v.string(),
-        githubId: v.optional(v.string()),
+        githubUsername: v.optional(v.string()),
         role: v.string()
     },
     handler: async (ctx, args) => {

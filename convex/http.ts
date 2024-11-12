@@ -69,7 +69,7 @@ const handleClerkWebhook = httpAction(async (ctx, req) => {
             email: event.data.email_addresses?.[0]?.email_address ?? '', // Use the first email address or default
             password: '', // Password should be securely handled (empty here)
             name: `${event.data.first_name ?? ''} ${event.data.last_name ?? ''}`.trim(), // Trim spaces if names are missing
-            githubId: "", // Optional GitHub ID (if available)
+            githubUsername: "", // Optional GitHub ID (if available)
             role: 'member' // Default role to 'user' if not provided
           });
         }
