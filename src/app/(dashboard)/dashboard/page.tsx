@@ -49,7 +49,7 @@ export default function UserProfileDashboard() {
         role: "user", // or any default role
         imageUrl: user?.imageUrl || "",
         password: "", // or any default password
-        githubId: "", // or any default githubId
+        githubUsername: "", // or any default githubId
       });
       setIsEditing(false);
     } catch (err) {

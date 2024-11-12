@@ -3,24 +3,20 @@ import { v } from 'convex/values';
 
 // Mutation to update GitHub info
 export const linkGitHub = mutation({
-  args: {
+  args: v.object({
     clerkId: v.string(),
     githubUsername: v.string(),
-  },
+  }),
   handler: async ({ db }, { clerkId, githubUsername }) => {
-  const user = await db.query('users').filter(q => q.eq(q.field('clerkId'), clerkId)).first();
-    if (user) {
-      await db.patch(user._id, {
-        githubUsername
-      });
-    }
-  }
-});
+    const user = await db
+      .query('users')
+      .filter(q => q.eq(q.field('clerkId'), clerkId))
+      .first();
 
-// Query to fetch GitHub repositories
-export const getGitHubRepos = query(async ({}, { githubUsername }) => {
-  const response = await fetch(`https://api.github.com/users/${githubUsername}/repos`);
-  if (!response.ok) throw new Error('Failed to fetch GitHub repositories');
-  const repos = await response.json();
-  return repos;
-});
+    if (user) {
+      await db.patch(user._id, { githubUsername });
+      return { success: true };
+    }
+    return { success: false, message: 'User not found' };
+  },
+}); 
