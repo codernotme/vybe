@@ -13,5 +13,7 @@ export const config = {
     "/mentor/:path*",
     "/admin/:path*",
     "/community/:path*",
+    "/(.*)",
+    "/",
   ],
 };
