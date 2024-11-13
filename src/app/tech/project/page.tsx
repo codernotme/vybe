@@ -11,7 +11,6 @@ const Project = () => {
 
   // Fetch user's project workspace(s) if user is defined
   const projectWorkspaces = useQuery(api.workspace.getProjectWorkspaces);
-  const projectId = projectWorkspaces && projectWorkspaces[0]?._id; // Assume the first project workspace for now
 
   if (user === undefined || projectWorkspaces === undefined) {
     return <p>Loading...</p>;
