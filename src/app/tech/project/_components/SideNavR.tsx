@@ -1,19 +1,14 @@
 "use client";
 import React from "react";
-import { Card } from "@/components/ui/card";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
-import GitHubLink from "./GithubLink";
-import GitHubProjects from "./GithubProject";
 import RepoSelection from "./RepoSelection";
-import PersonalWorkspace from "./PersonalWorkspace";
 import WorkspaceSelector from "./WorkspaceSelector";
 const SideNavR = () => {
   const user = useQuery(api.users.get);
 
   // Fetch user's project workspace(s) if user is defined
   const projectWorkspaces = useQuery(api.workspace.getProjectWorkspaces);
-  const projectId = projectWorkspaces && projectWorkspaces[0]?._id; // Assume the first project workspace for now
 
   if (user === undefined || projectWorkspaces === undefined) {
     return <p>Loading...</p>;

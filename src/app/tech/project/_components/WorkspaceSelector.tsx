@@ -31,9 +31,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({ userId }) => {
                 </p>
               </Card>
                <Spacer y={1} />
-              <Button onClick={() => router.push(`/workspace/`)}>
-                Open Workspace
-              </Button>
+               <Button onClick={() => router.push(`/workspace/${workspace._id}`)}>Open Workspace</Button>
             </Card>
           )
       )}
