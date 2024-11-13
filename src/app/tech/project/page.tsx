@@ -22,8 +22,8 @@ const Project = () => {
 
   return (
     <>
-    <div className=" lg:flex lg:flex-row lg:h-full gap-4">
-    <Card className="flex flex-col h-auto w-lg items-center justify-center bg-secondary mt-4">
+    <div className=" lg:flex lg:flex-row  gap-4">
+    <Card className="flex flex-col  w-[calc(100%-10px)] items-center justify-center bg-secondary mt-4">
       <h1 className="text-3xl font-bold mb-8 text-center p-4">
         GitHub Project Management
       </h1>

@@ -14,6 +14,20 @@ export default function GitHubLink() {
   const [githubUsername, setGitHubUsername] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
+  const handleLinkGitHub = async () => {
+    setIsLoading(true);
+    try {
+      if (user?.clerkId) {
+        await linkGitHubMutation({ clerkId: user.clerkId, githubUsername });
+      } else {
+        console.error("User clerkId is undefined");
+      }
+    } catch (error) {
+      console.error("Failed to link GitHub:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -36,6 +50,7 @@ export default function GitHubLink() {
         <Button
           className="w-full"
           disabled={isLoading || !githubUsername.trim()}
+          onClick={handleLinkGitHub}
         >
           {isLoading ? (
             "Linking..."
