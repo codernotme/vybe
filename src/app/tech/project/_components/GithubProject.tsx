@@ -45,7 +45,7 @@ export default function GitHubProjects() {
   const [error, setError] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const reposPerPage = 6; // Adjust this value based on your screen height
+  const reposPerPage = 4; // Adjust this value based on your screen height
 
   useEffect(() => {
     const fetchRepos = async () => {
@@ -126,7 +126,7 @@ export default function GitHubProjects() {
   }
 
   return (
-    <div className="p-4 min-h-screen">
+    <div className="p-4 w-full">
       {/* Search Bar */}
       <Input
         label="Search"
@@ -192,7 +192,7 @@ function RepoCard({ repo }: { repo: Repo }) {
   const cardColor = getRandomColor();
 
   return (
-    <Card className={`flex flex-col justify-between h-full p-4 ${cardColor}`}>
+    <Card className={`flex flex-col justify-between p-4 ${cardColor}`}>
       <CardHeader>
         <CardTitle className="text-lg truncate">{repo.name}</CardTitle>
       </CardHeader>
