@@ -1,8 +1,9 @@
 "use client";
-import { SignIn, SignUp } from "@clerk/nextjs";
 import { StrictMode, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@nextui-org/button";
+import SigninPage from "./sign-in";
+import SignupPage from "./sign-up";
 
 export default function AuthCard() {
   const [selectedOption, setSelectedOption] = useState<"signIn" | "signUp">(
@@ -29,8 +30,8 @@ export default function AuthCard() {
         </div>
 
         {/* Conditional Rendering based on the selected option */}
-        {selectedOption === "signIn" && <SignIn />}
-        {selectedOption === "signUp" && <SignUp />}
+        {selectedOption === "signIn" && <SigninPage/> }
+        {selectedOption === "signUp" && <SignupPage/>}
       </Card>
     </StrictMode>
   );
