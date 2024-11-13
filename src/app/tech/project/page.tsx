@@ -4,9 +4,6 @@ import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import GitHubLink from "./_components/GithubLink";
 import GitHubProjects from "./_components/GithubProject";
-import RepoSelection from "./_components/RepoSelection";
-import PersonalWorkspace from "./_components/PersonalWorkspace";
-import { Id } from '../../../../convex/_generated/dataModel';
 import SideNavR from "./_components/SideNavR";
 
 const Project = () => {
