@@ -6,6 +6,9 @@ import axios from "axios";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Button } from "@nextui-org/button";
+import { Input } from "@nextui-org/input";
+import { Card } from "@nextui-org/react";
+import { SearchIcon } from "@/components/icons";
 
 // Define the Repo interface
 interface Repo {
@@ -19,7 +22,10 @@ interface RepoSelectionProps {
 }
 
 // Function to fetch repos from GitHub
-const fetchGithubRepos = async (githubUsername: string, page: number = 1): Promise<Repo[]> => {
+const fetchGithubRepos = async (
+  githubUsername: string,
+  page: number = 1
+): Promise<Repo[]> => {
   const response = await axios.get(
     `https://api.github.com/users/${githubUsername}/repos?per_page=100&page=${page}`
   );
@@ -63,7 +69,6 @@ const RepoSelection: React.FC<RepoSelectionProps> = ({ githubUsername }) => {
         userId: user._id,
         repoName: repo.name,
         repoUrl: repo.url,
-        description: repo.description,
       });
     } else {
       console.error("User ID is undefined");
@@ -72,42 +77,37 @@ const RepoSelection: React.FC<RepoSelectionProps> = ({ githubUsername }) => {
 
   return (
     <div>
-      <h2>Select GitHub Repository</h2>
+      <Card className="flex flex-col mx-auto p-4 gap-4 w-[300px] ml-6 bg-secondary-default">
+        <h2>Select GitHub Repository</h2>
 
-      {/* Search bar for filtering repositories */}
-      <input
-        type="text"
-        placeholder="Search repositories"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        style={{ padding: "8px", marginBottom: "16px", width: "100%" }}
-      />
+        {/* Search bar for filtering repositories */}
+        <Input
+             label="Search"
+             color="primary"
+             variant="bordered"
+             isClearable
+             radius="lg"
+             className="mb-4 w-[200]"
+             placeholder="Type to search..."
+             startContent={
+               <SearchIcon className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
+             }
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
 
-      {/* Display only first few filtered repositories */}
-      <div>
-        {filteredRepos.slice(0, 4).map((repo) => (
-          <div key={repo.name} style={{ marginBottom: "10px" }}>
-            <p>{repo.name}</p>
-            <p>{repo.description}</p>
-            <Button onClick={() => handleSelectRepo(repo)}>Select</Button>
-          </div>
-        ))}
-
-        {/* If there are more than 4 repositories, show "Show more" */}
-        {filteredRepos.length > 4 && (
-          <div>
-            <Button
-              onClick={() => setSearchQuery("")} // Reset search to show all repos
-            >
-              Show more
-            </Button>
-          </div>
-        )}
-      </div>
+        {/* Display only first few filtered repositories */}
+        <div>
+          {filteredRepos.slice(0, 4).map((repo) => (
+            <div key={repo.name} className="flex justify-between items-center" style={{ marginBottom: "10px" }}>
+              <p>{repo.name}</p>
+              <Button onClick={() => handleSelectRepo(repo)} size="sm">Select</Button>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 };
 
 export default RepoSelection;
-
-

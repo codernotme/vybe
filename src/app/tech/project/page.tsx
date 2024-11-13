@@ -7,6 +7,7 @@ import GitHubProjects from "./_components/GithubProject";
 import RepoSelection from "./_components/RepoSelection";
 import PersonalWorkspace from "./_components/PersonalWorkspace";
 import { Id } from '../../../../convex/_generated/dataModel';
+import SideNavR from "./_components/SideNavR";
 
 const Project = () => {
   const user = useQuery(api.users.get);
@@ -24,7 +25,9 @@ const Project = () => {
   }
 
   return (
-    <Card className="flex flex-col h-auto w-full items-center justify-center bg-secondary mt-4">
+    <>
+    <div className=" lg:flex lg:flex-row lg:h-full gap-4">
+    <Card className="flex flex-col h-auto w-lg items-center justify-center bg-secondary mt-4">
       <h1 className="text-3xl font-bold mb-8 text-center p-4">
         GitHub Project Management
       </h1>
@@ -32,16 +35,21 @@ const Project = () => {
         {user.githubUsername ? (
           <>
             <GitHubProjects />
-            <RepoSelection githubUsername={user.githubUsername} />
-            {projectId && (
-              <PersonalWorkspace userId={user._id} projectId={projectId} />
-            )}
           </>
         ) : (
           <GitHubLink />
         )}
       </CardBody>
     </Card>
+    {user.githubUsername ? (
+          <>
+            <SideNavR/>
+          </>
+        ) : (
+          null
+        )}
+    </div>
+    </>
   );
 };
 

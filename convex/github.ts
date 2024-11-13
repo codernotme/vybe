@@ -1,6 +1,5 @@
 import { mutation, query } from '../convex/_generated/server';
 import { v } from 'convex/values';
-import axios from 'axios';
 
 // Mutation to update GitHub info
 export const linkGitHub = mutation({
@@ -28,14 +27,12 @@ export const selectRepo = mutation({
     userId: v.id('users'),
     repoName: v.string(),
     repoUrl: v.string(),
-    description: v.string(),
   }),
-  handler: async ({ db }, { userId, repoName, repoUrl, description }) => {
+  handler: async ({ db }, { userId, repoName, repoUrl}) => {
     return db.insert('projectWorkspaces', {
       ownerId: userId,
       repoName,
       repoUrl,
-      description,
       techStack: [],
       status: 'active',
     });

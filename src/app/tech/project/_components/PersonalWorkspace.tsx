@@ -1,8 +1,11 @@
 "use client";
-import React, { useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import React, { useState, useEffect } from "react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
-import { Button } from "@nextui-org/button";
+import { Button, Card, Input } from "@nextui-org/react";
+import ToDos from "./To-dos";
+import InviteUsers from "./InviteUsers";
+import { useRouter } from "next/navigation";
 import { Id } from "../../../../../convex/_generated/dataModel";
 
 interface PersonalWorkspaceProps {
@@ -11,80 +14,49 @@ interface PersonalWorkspaceProps {
 }
 
 const PersonalWorkspace: React.FC<PersonalWorkspaceProps> = ({ projectId, userId }) => {
-  // Fetch chat messages for the project
-  const chatMessages = useQuery(api.workspace.fetchProjectChatMessages, {
-    projectId,});
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const router = useRouter();
+  const chatMessages = useQuery(api.workspace.fetchProjectChatMessages, { projectId, userId });
+  const addMessage = useMutation(api.workspace.addProjectChatMessage);
+  const [newMessage, setNewMessage] = useState("");
 
-  // Fetch GitHub logs for a placeholder repo URL (or actual URL if available)
-  const githubLogs = useQuery(api.workspace.fetchGitHubLogs, {
-    repoUrl: "https://github.com/sample/repo",
-  });
+  const projectDetails = useQuery(api.workspace.getProjectWorkspace, { projectId, userId });
 
-  // Define mutation hooks for adding messages and todos
-  const addMessageMutation = useMutation(api.workspace.addProjectChatMessage);
-  const addTodoMutation = useMutation(api.workspace.addTodo);
-
-  const [newMessage, setNewMessage] = useState<string>("");
-  const [newTodo, setNewTodo] = useState<string>("");
+  useEffect(() => {
+    if (projectDetails) {
+      setIsAuthorized(true);
+    }
+  }, [projectDetails]);
 
   const handleAddMessage = async () => {
     if (newMessage.trim()) {
-      await addMessageMutation({
-        projectId, // Using projectId instead of convoId
-        senderId: userId,
-        content: newMessage,
-      });
+      await addMessage({ projectId, senderId: userId, content: newMessage });
       setNewMessage("");
     }
   };
 
-  const handleAddTodo = async () => {
-    if (newTodo.trim()) {
-      await addTodoMutation({
-        projectId,
-        creatorId: userId,
-        content: newTodo,
-        completed: false,
-      });
-      setNewTodo("");
-    }
-  };
+  if (!isAuthorized) {
+    return <div>Access Denied. You are not a member of this project.</div>;
+  }
 
   return (
-    <div>
-      <h2>Project Chat</h2>
-      {chatMessages && chatMessages.length > 0 ? (
-        chatMessages.map((msg: any) => <p key={msg._id}>{msg.content}</p>)
-      ) : (
-        <p>No messages yet.</p>
-      )}
-      <input
-        value={newMessage}
-        onChange={(e) => setNewMessage(e.target.value)}
-        placeholder="Type a message"
-        title="New Message"
-      />
-      <Button onClick={handleAddMessage}>Send</Button>
+    <div className="p-6">
+      <Button onClick={() => router.push("/")}>Back to Workspaces</Button>
+      <Card className="mt-4">
+        <h2>Project Chat</h2>
+        {chatMessages?.map((msg) => (
+          <p key={msg._id}>{msg.content}</p>
+        ))}
+        <Input
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder="Type a message"
+        />
+        <Button onClick={handleAddMessage}>Send</Button>
+      </Card>
 
-      <h2>To-Do List</h2>
-      <input
-        value={newTodo}
-        onChange={(e) => setNewTodo(e.target.value)}
-        placeholder="Type a new task"
-        title="New Todo"
-      />
-      <Button onClick={handleAddTodo}>Add Todo</Button>
-
-      <h2>GitHub Logs</h2>
-      {githubLogs && githubLogs.length > 0 ? (
-        githubLogs.map((log: any, index: number) => (
-          <div key={index}>
-            <p>{log.message}</p>
-          </div>
-        ))
-      ) : (
-        <p>No GitHub logs available.</p>
-      )}
+      <ToDos projectId={projectId} userId={userId} />
+      <InviteUsers projectId={projectId} />
     </div>
   );
 };

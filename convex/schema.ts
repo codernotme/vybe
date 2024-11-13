@@ -90,7 +90,6 @@ export default defineSchema({
     ownerId: v.id("users"), // The ID of the project owner
     repoName: v.string(), // The name of the linked GitHub repo
     repoUrl: v.string(), // GitHub repository URL
-    description: v.string(), // Project description
     techStack: v.array(v.string()), // Array of strings representing the tech stack used
     status: v.string(), // Status of the project (e.g., active, completed)
   }).index("by_owner", ["ownerId"]),
