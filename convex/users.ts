@@ -77,6 +77,7 @@ export const get = query({
 
     // Return only the fields you want
     return {
+      _id: user._id,
       name: user.name,
       username: user.username,
       email: user.email,

@@ -29,6 +29,7 @@ import type * as requests from "../requests.js";
 import type * as roles from "../roles.js";
 import type * as user from "../user.js";
 import type * as users from "../users.js";
+import type * as workspace from "../workspace.js";
 import type * as _utils from "../_utils.js";
 
 /**
@@ -56,6 +57,7 @@ declare const fullApi: ApiFromModules<{
   roles: typeof roles;
   user: typeof user;
   users: typeof users;
+  workspace: typeof workspace;
   _utils: typeof _utils;
 }>;
 export declare const api: FilterApi<

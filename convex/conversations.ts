@@ -119,13 +119,13 @@ const getLastMessageDetails = async({
 
 // Helper function to get the content of a message based on its type
 const getMessageContent = (type: string, content: string) => {
-  switch(type){
+  switch (type) {
     case "text":
-      return content;  // Return text content as is
+      return content;
     case "image":
-      return content;  // Return image content (could be a URL or encoded image data)
-    // Future cases for video, file, etc., can be added here
+      return content; // Adjust if handling different formats
     default:
-      return "[Non-text]";  // Return a placeholder for non-text content
+      return "[Non-text content]";
   }
-}
+};
+
