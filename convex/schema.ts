@@ -117,4 +117,22 @@ export default defineSchema({
     senderId: v.id("users"), // The ID of the user who sent the message
     content: v.string(), // Chat message content
   }).index("by_projectId", ["projectId"]),
+
+    //Anonymous chats
+    anonymousChat: defineTable({
+      text: v.string(),
+      userId: v.string(),
+      timestamp: v.number(),
+    })
+      .index("by_userId", ["userId"])
+      .index("by_timestamp", ["timestamp"]),
+    //Anonymous Post
+    anonymousPost: defineTable({
+      text: v.string(),
+      userId: v.string(),
+      timestamp: v.number(),
+    })
+      .index("by_userId", ["userId"])
+      .index("by_timestamp", ["timestamp"]),
 });
+
