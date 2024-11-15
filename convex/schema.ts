@@ -117,4 +117,16 @@ export default defineSchema({
     senderId: v.id("users"), // The ID of the user who sent the message
     content: v.string(), // Chat message content
   }).index("by_projectId", ["projectId"]),
+
+  // Define the "newsletters" table for blog submissions
+  newsletters: defineTable({
+    title: v.string(),            // Title of the blog post
+    content: v.string(),          // Content of the blog post
+    authorId: v.id("users"),      // ID of the user (mentor or community member) who wrote the blog
+    createdAt: v.number(),        // Timestamp for when the blog was created
+    approved: v.boolean(), // Approval status for the blog post (default is false)
+  })
+    .index("by_authorId", ["authorId"])         // Index for fetching all posts by a specific author
+    .index("by_approval_status", ["approved"]), // Index for fetching posts based on approval status
+
 });
