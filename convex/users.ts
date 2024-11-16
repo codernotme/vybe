@@ -4,7 +4,7 @@ import { getUserByClerkId } from "./_utils";
 
 // Mutation to update user data by Clerk ID
 export const update = mutation({
-  args: {
+  args: v.object({
     username: v.string(),
     email: v.string(),
     imageUrl: v.string(),
@@ -14,7 +14,9 @@ export const update = mutation({
     githubUsername: v.optional(v.string()),
     role: v.string(),
     isOnline: v.optional(v.boolean()),
-  },
+    description: v.optional(v.string()),
+    interests: v.optional(v.array(v.string())),
+  }),
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
 
@@ -43,7 +45,7 @@ export const update = mutation({
 
 // Query to get user data by Clerk ID
 export const get = query({
-  args: {},
+  args: v.object({}),
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
 
@@ -76,6 +78,36 @@ export const get = query({
       githubUsername: user.githubUsername,
       clerkId: user.clerkId,
       isOnline: user.isOnline,
+      description: user.description,
+      interests: user.interests,
     };
+  },
+});
+
+export const search = query({
+  args: v.object({ username: v.string() }),
+  handler: async (ctx, { username }) => {
+    try {
+      const users = await ctx.db
+        .query("users")
+        .withIndex("by_username", (q) => q.eq("username", username))
+        .collect();
+      return users.map((user) => ({
+        _id: user._id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      imageUrl: user.imageUrl,
+      role: user.role,
+      githubUsername: user.githubUsername,
+      clerkId: user.clerkId,
+      isOnline: user.isOnline,
+      description: user.description,
+      interests: user.interests,
+      }));
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      throw new Error("Failed to fetch users.");
+    }
   },
 });

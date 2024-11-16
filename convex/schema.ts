@@ -1,5 +1,5 @@
-import { defineSchema, defineTable } from "convex/server";
-import { v } from "convex/values";
+import { defineSchema, defineTable } from "convex/server"; // Ensure this import is correct
+import { v } from "convex/values"; // Ensure this import is correct
 
 export default defineSchema({
   // Define the "users" table to store user information
@@ -13,6 +13,8 @@ export default defineSchema({
     githubUsername: v.optional(v.string()), // GitHub username
     role: v.string(), // 'admin', 'mentor', 'member', 'tech', 'community'
     isOnline: v.optional(v.boolean()),
+    description: v.optional(v.string()),
+    interests: v.optional(v.array(v.string())),
   })
     .index("by_username", ["username"])
     .index("by_clerkId", ["clerkId"])
