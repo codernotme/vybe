@@ -1,9 +1,22 @@
-import React from 'react'
+import { useEffect, useState } from "react";
+import { getEventsAPI } from "./api/events";
+import EventCard from "./components/EventCard";
 
-type Props = {}
+export default function EventsPage() {
+  const [events, setEvents] = useState([]);
 
-export default function Events(){
+  useEffect(() => {
+    getEventsAPI().then(setEvents);
+  }, []);
+
   return (
-    <div>Events</div>
-  )
+    <div>
+      <h1>All Events</h1>
+      {events.length ? (
+        events.map((event) => <EventCard key={event.id} event={event} />)
+      ) : (
+        <p>No events found</p>
+      )}
+    </div>
+  );
 }
