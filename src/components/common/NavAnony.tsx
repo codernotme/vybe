@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Navbar } from "@nextui-org/navbar";
 import { usePathname } from "next/navigation"; // Assuming usePathname is a hook to get the current pathname
 import styled from "styled-components";
-import { User2Icon } from "lucide-react";
+import { User2Icon, VenetianMask } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 
@@ -16,7 +16,7 @@ const NavbarAnonymous = () => {
     {
       name: "Chat",
       href: "/anonymousChat",
-      icon: <User2Icon />,
+      icon: <VenetianMask />,
       active: pathname === "/anonymousChat"
     }
     // Add more paths here if needed
@@ -33,7 +33,7 @@ const NavbarAnonymous = () => {
               <Link href={path.href}>
                 <StyledWrapper>
                   <Button className="text-secondary-foreground">
-                    <User2Icon className="h-5 w-5" />
+                  <VenetianMask />
                   </Button>
                 </StyledWrapper>
               </Link>
