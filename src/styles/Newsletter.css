@@ -1,0 +1,29 @@
+.form, .blog-post, .button, .approve-btn, .reject-btn {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    padding: 1rem;
+  }
+  
+  .input, .textarea {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .button, .approve-btn, .reject-btn {
+    padding: 0.5rem;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .approve-btn {
+    background-color: #28a745;
+  }
+  
+  .reject-btn {
+    background-color: #dc3545;
+  }
+  
