@@ -23,7 +23,6 @@ import type * as friends from "../friends.js";
 import type * as getUserPosts from "../getUserPosts.js";
 import type * as github from "../github.js";
 import type * as http from "../http.js";
-import type * as index from "../index.js";
 import type * as message from "../message.js";
 import type * as messages from "../messages.js";
 import type * as post from "../post.js";
@@ -55,7 +54,6 @@ declare const fullApi: ApiFromModules<{
   getUserPosts: typeof getUserPosts;
   github: typeof github;
   http: typeof http;
-  index: typeof index;
   message: typeof message;
   messages: typeof messages;
   post: typeof post;

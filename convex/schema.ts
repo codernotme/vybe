@@ -150,5 +150,15 @@ export default defineSchema({
     duration: v.number(), // Add duration field
   })
     .index("by_userId", ["userId"]),
+
+  // Define the "events" table to store event information
+  events: defineTable({
+    title: v.string(), // Title of the event
+    description: v.string(), // Description of the event
+    date: v.string(), // Date of the event
+    location: v.string(), // Location of the event
+    createdBy: v.optional(v.id("users")), // ID of the user who created the event
+    attendees: v.optional(v.array(v.id("users"))), // Optional array of user IDs who are attending the event
+  }).index("by_createdBy", ["createdBy"]),
 });
 
