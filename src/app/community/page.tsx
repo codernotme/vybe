@@ -1,15 +1,7 @@
-import React, { ReactNode } from "react";
+import React from "react";
 
-type Props = {
-  children: ReactNode;
-};
-
-const CommunityPage = ({ children }: Props) => {
-  return (
-    <div>
-      {children}
-    </div>
-  );
+const CommunityPage = () => {
+  return null;
 };
 
 export default CommunityPage;

@@ -2,9 +2,6 @@ import { ConvexError, v } from "convex/values";
 import { query } from "./_generated/server";
 import { getUserByClerkId } from "./_utils";
 
-
-
-
 // Define a query to get both the current user's and their friends' posts
 export const get = query({
   args: {},
@@ -28,6 +25,7 @@ export const get = query({
       }
 
       // Fetch posts from the current user
+      const now = Date.now();
       const userPosts = await ctx.db
         .query("posts")
         .withIndex("by_userId", (q) => q.eq("userId", currentUser._id))
@@ -49,9 +47,10 @@ export const get = query({
 
       // Fetch posts for each friend in both cases (whether they are user1 or user2)
       const friendsPostsPromises = allFriendships.map(async (friendship) => {
-        const friendId = friendship.user1.toString() === currentUser._id.toString()
-          ? friendship.user2
-          : friendship.user1;
+        const friendId =
+          friendship.user1.toString() === currentUser._id.toString()
+            ? friendship.user2
+            : friendship.user1;
 
         // Fetch all posts from the friend
         return ctx.db
@@ -69,7 +68,9 @@ export const get = query({
 
       // Sort all posts by creation time (newest first)
       allPosts.sort(
-        (a, b) => new Date(b._creationTime).getTime() - new Date(a._creationTime).getTime()
+        (a, b) =>
+          new Date(b._creationTime).getTime() -
+          new Date(a._creationTime).getTime()
       );
 
       // Fetch author details for each post
@@ -85,13 +86,13 @@ export const get = query({
             post,
             authorImage: author.imageUrl,
             authorName: author.username,
-            isCurrentUser: post.userId.toString() === currentUser._id.toString(), // Check if the current user is the author
+            isCurrentUser:
+              post.userId.toString() === currentUser._id.toString(), // Check if the current user is the author
           };
         })
       );
 
       return postsWithAuthors;
-
     } catch (error) {
       // Handle and log errors for better debugging
       console.error("Error fetching posts:", error);
@@ -150,7 +151,6 @@ export const getComments = query({
       );
 
       return commentsWithAuthors;
-
     } catch (error) {
       // Handle and log errors for better debugging
       console.error("Error fetching comments:", error);

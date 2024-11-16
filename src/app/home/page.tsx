@@ -1,16 +1,16 @@
 "use client";
 
 import React from "react";
-import PostInput from "./_components/PostInput";
+import AnonymousPost from "@/components/AnonymousPost";
 import PostPage from "./_components/Posts";
 
 export default function Home() {
-  return(
+  return (
     <>
-    <main className="main">
-      <PostInput/>
-      <PostPage/>
-    </main>
+      <main className="main">
+        <AnonymousPost />
+        <PostPage />
+      </main>
     </>
   );
 }

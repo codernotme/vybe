@@ -1,19 +1,19 @@
 // components/AnonymousChat.tsx
 import { useState, useEffect } from "react";
-import { api } from "../convex/_generated/api"; // adjust path to your Convex API
 import { useMutation, useQuery } from "convex/react";
-import { Button, Input, Text } from "@nextui-org/react";
+import { Button, Input, Switch } from "@nextui-org/react"; // Add import for Switch component
+import { api } from "../../convex/_generated/api";
 
 interface Message {
   id: string;
   text: string;
   userId: string; // anonymized unique identifier
-  timestamp: Date;
 }
 
 const AnonymousChat = () => {
   const [message, setMessage] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isAnonymous, setIsAnonymous] = useState(false); // Add state for anonymous mode
   const messages = useQuery(api.anonymousChat.getMessages); // fetch messages
   const sendMessage = useMutation(api.anonymousChat.sendMessage); // mutation to send message
 
@@ -26,7 +26,7 @@ const AnonymousChat = () => {
 
   const handleSendMessage = async () => {
     if (message.trim()) {
-      await sendMessage({ text: message, userId: sessionId });
+      await sendMessage({ text: message, userId: isAnonymous ? null : sessionId });
       setMessage(""); // clear input after sending
     }
   };
@@ -36,22 +36,25 @@ const AnonymousChat = () => {
       <div className="overflow-y-auto flex-grow mb-4 p-2">
         {messages?.map((msg: Message) => (
           <div key={msg.id} className="mb-2">
-            <Text small color="gray">
-              {msg.userId}:
-            </Text>
-            <Text>{msg.text}</Text>
+            <span className="font-semibold">
+              {"User"}:
+            </span>
+            <span>{msg.text}</span>
           </div>
         ))}
       </div>
       <div className="flex items-center space-x-2">
         <Input
-          clearable
           placeholder="Type a message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           fullWidth
         />
-        <Button auto onClick={handleSendMessage}>
+        <div className="flex items-center">
+          <Switch checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)} />
+          <span className="ml-2">Send Anonymously</span>
+        </div>
+        <Button onClick={handleSendMessage}>
           Send
         </Button>
       </div>

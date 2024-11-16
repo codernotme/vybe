@@ -1,34 +1,25 @@
-// convex/anonymousPost.ts
+import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-const DAILY_POST_LIMIT = 5;
-
-export const addPost = mutation(async ({ db }, { text, userId }) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
-
-  // Count today's posts by this user
-  const postCount = await db
-    .query("anonymousPost")
-    .withIndex("by_userId", (q) => q.eq("userId", userId))
-    .filter((q) => q.gt("timestamp", today.getTime()))
-    .count();
-
-  if (postCount >= DAILY_POST_LIMIT) {
-    return { error: "You have reached the daily post limit of 5." };
-  }
-
-  // Add the post if within the limit
-  const post = {
-    text,
-    userId,
-    timestamp: Date.now(),
-  };
-  await db.insert("anonymousPost", post);
-  return { success: true };
+export const addPost = mutation({
+  args: {
+    text: v.string(),
+    userId: v.optional(v.string()),
+    isAnonymous: v.boolean(),
+    duration: v.number(),
+  },
+  handler: async ({ db }, { text, userId, isAnonymous, duration }) => {
+    const timestamp = Date.now();
+    await db.insert("anonymousPost", { text, userId, timestamp, isAnonymous, duration });
+  },
 });
 
-export const getPosts = query(async ({ db }) => {
-  // Retrieve posts, ordered by timestamp in descending order
-  return await db.query("anonymousPost").withIndex("by_timestamp").order("timestamp", "desc").collect();
+export const getPosts = query({
+  handler: async ({ db }) => {
+    const now = Date.now();
+    return await db.query("anonymousPost")
+      .filter(q => q.gte(q.field("timestamp"), now - 24 * 60 * 60 * 1000))
+      .order("desc")
+      .collect();
+  },
 });
