@@ -1,12 +1,13 @@
-import React from "react";
-import Home from "../home/page";
+import React, { ReactNode } from "react";
 
-type Props = {};
+type Props = {
+  children: ReactNode;
+};
 
-const CommunityPage = (props: Props) => {
+const CommunityPage = ({ children }: Props) => {
   return (
     <div>
-      <Home />
+      {children}
     </div>
   );
 };

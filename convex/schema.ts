@@ -128,5 +128,22 @@ export default defineSchema({
   })
     .index("by_authorId", ["authorId"])         // Index for fetching all posts by a specific author
     .index("by_approval_status", ["approved"]), // Index for fetching posts based on approval status
-
+  
+    //Anonymous chats
+    anonymousChat: defineTable({
+      text: v.string(),
+      userId: v.string(),
+      timestamp: v.number(),
+    })
+      .index("by_userId", ["userId"])
+      .index("by_timestamp", ["timestamp"]),
+    //Anonymous Post
+    anonymousPost: defineTable({
+      text: v.string(),
+      userId: v.string(),
+      timestamp: v.number(),
+    })
+      .index("by_userId", ["userId"])
+      .index("by_timestamp", ["timestamp"]),
 });
+
