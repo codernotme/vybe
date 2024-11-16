@@ -40,9 +40,9 @@ export const useNavigation = () => {
       },
       {
         name: "Newsletter",
-        href: "/newsletter",
+        href: "/newsletters",
         icon: <NewspaperIcon className="h-6 w-6" />,
-        active: pathname === "/tech/newsletter",
+        active: pathname === "/newsletters",
       },
       {
         name: "Mentor Connect",

@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as anonymousChat from "../anonymousChat.js";
 import type * as anonymousPost from "../anonymousPost.js";
 import type * as conversation from "../conversation.js";
 import type * as conversations from "../conversations.js";
@@ -42,6 +43,7 @@ import type * as _utils from "../_utils.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  anonymousChat: typeof anonymousChat;
   anonymousPost: typeof anonymousPost;
   conversation: typeof conversation;
   conversations: typeof conversations;

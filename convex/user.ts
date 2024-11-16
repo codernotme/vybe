@@ -11,7 +11,8 @@ export const create = internalMutation({
         password: v.string(),
         name: v.string(),
         githubUsername: v.optional(v.string()),
-        role: v.string()
+        role: v.string(),
+        isOnline: v.optional(v.boolean())
     },
     handler: async (ctx, args) => {
         // Insert the new user record into the "users" table

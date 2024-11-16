@@ -70,7 +70,8 @@ const handleClerkWebhook = httpAction(async (ctx, req) => {
             password: '', // Password should be securely handled (empty here)
             name: `${event.data.first_name ?? ''} ${event.data.last_name ?? ''}`.trim(), // Trim spaces if names are missing
             githubUsername: "", // Optional GitHub ID (if available)
-            role: 'member' // Default role to 'user' if not provided
+            role: 'member', // Default role to 'user' if not provided
+            isOnline: true, // Set the user as online when created
           });
         }
         break;

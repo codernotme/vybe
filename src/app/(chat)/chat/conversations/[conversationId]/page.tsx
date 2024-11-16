@@ -11,6 +11,8 @@ import ChatInput from "./_components/input/ChatInput";
 import RemoveFriendDialog from "./_components/dialogs/RemoveFriendDialog";
 import DeleteGroupDialog from "./_components/dialogs/DeletegroupDialogbox";
 import LeaveGroupDialog from "./_components/dialogs/LeaveGroupDialog";
+import AnonymousChat from "@/components/Anonymous/AnonymousChat"; // Add import for AnonymousChat component
+import { Button } from "@/components/ui/button";
 type Props = {
   params: {
     conversationId: Id<"conversations">;
@@ -23,6 +25,7 @@ const ConversationPage = ({ params: { conversationId } }: Props) => {
   const [deleteGroupdDialogOpen, setDeleteGroupDialogOpen] = useState(false);
   const [leaveGroupDialogOpen, setLeaveGroupDialogOpen] = useState(false);
   const [callType, setCallType] = useState<"audio" | "video" | null>(null);
+  const [showAnonymousChat, setShowAnonymousChat] = useState(false); // Add state to toggle anonymous chat
 
   return conversation === undefined ? (
     <div className="w-full h-full flex items-center justify-center">
@@ -49,7 +52,6 @@ const ConversationPage = ({ params: { conversationId } }: Props) => {
         open={deleteGroupdDialogOpen}
         setOpen={setDeleteGroupDialogOpen}
       />
-
       <Header
         imageUrl={
           conversation.isGroup ? undefined : conversation.otherMember?.imageUrl
@@ -65,20 +67,20 @@ const ConversationPage = ({ params: { conversationId } }: Props) => {
                 {
                   label: "Leave Group",
                   destructive: false,
-                  onClick: () => setLeaveGroupDialogOpen(true)
+                  onClick: () => setLeaveGroupDialogOpen(true),
                 },
                 {
                   label: "Delete Group",
                   destructive: true,
-                  onClick: () => setDeleteGroupDialogOpen(true)
-                }
+                  onClick: () => setDeleteGroupDialogOpen(true),
+                },
               ]
             : [
                 {
                   label: "Remove Friend",
                   destructive: true,
-                  onClick: () => setRemoveFriendDialogOpen(true)
-                }
+                  onClick: () => setRemoveFriendDialogOpen(true),
+                },
               ]
         }
       />

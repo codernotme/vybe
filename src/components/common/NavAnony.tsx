@@ -2,23 +2,22 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Navbar } from "@nextui-org/navbar";
 import { usePathname } from "next/navigation"; // Assuming usePathname is a hook to get the current pathname
-import { ChatBubbleIcon } from "@radix-ui/react-icons";
 import styled from "styled-components";
+import { User2Icon } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 
-const NavbarConvo = () => {
+const NavbarAnonymous = () => {
   const pathname = usePathname();
 
   const paths = [
     {
       name: "Chat",
-      href: "/chat/conversations",
-      icon: <ChatBubbleIcon />,
-      active: pathname === "/chat/conversations"
+      href: "/anonymousChat",
+      icon: <User2Icon />,
+      active: pathname === "/anonymousChat"
     }
     // Add more paths here if needed
   ];
@@ -34,7 +33,7 @@ const NavbarConvo = () => {
               <Link href={path.href}>
                 <StyledWrapper>
                   <Button className="text-secondary-foreground">
-                    <ChatBubbleIcon className="h-5 w-5" />
+                    <User2Icon className="h-5 w-5" />
                   </Button>
                 </StyledWrapper>
               </Link>
@@ -44,10 +43,9 @@ const NavbarConvo = () => {
       </Navbar>
     </main>
   );
-}
-else {
-  return null;
-}
+  } else {
+    return null;
+  }
 };
 
 const StyledWrapper = styled.div`
@@ -64,4 +62,4 @@ const StyledWrapper = styled.div`
   }
 `;
 
-export default NavbarConvo;
+export default NavbarAnonymous;

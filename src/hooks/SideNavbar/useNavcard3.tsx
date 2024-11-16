@@ -49,10 +49,10 @@ export const useNavigation = () => {
       },
       {
         name: "Newsletters",
-        href: "/community/newsletters",
+        href: "/newsletters",
         icon: <NewspaperIcon className="h-6 w-6" />,
-        active: pathname === "/community/newsletters",
-      }
+        active: pathname === "/newsletters",
+      },
     ],
     [pathname]
   );

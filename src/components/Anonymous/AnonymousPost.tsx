@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { Button, Input, Card, Switch, Select } from "@nextui-org/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../../../convex/_generated/api";
 
 interface Post {
   _id: string;
@@ -72,9 +72,7 @@ const AnonymousPost = () => {
           Post
         </Button>
       </div>
-      {posts?.map((post: Post) => (
-        <PostComponent key={post._id} post={post} />
-      ))}
+      {posts?.map((post: Post) => <PostComponent key={post._id} post={post} />)}
     </div>
   );
 };

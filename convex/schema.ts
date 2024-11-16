@@ -12,6 +12,7 @@ export default defineSchema({
     name: v.string(),
     githubUsername: v.optional(v.string()), // GitHub username
     role: v.string(), // 'admin', 'mentor', 'member', 'tech', 'community'
+    isOnline: v.optional(v.boolean()),
   })
     .index("by_username", ["username"])
     .index("by_clerkId", ["clerkId"])
@@ -133,6 +134,7 @@ export default defineSchema({
   anonymousChat: defineTable({
     text: v.string(),
     userId: v.optional(v.string()), // Make userId optional
+    randomUser: v.optional(v.string()), // Add randomUser field
     timestamp: v.number(),
   })
     .index("by_userId", ["userId"]),

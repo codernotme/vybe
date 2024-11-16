@@ -13,6 +13,7 @@ export const update = mutation({
     name: v.string(),
     githubUsername: v.optional(v.string()),
     role: v.string(),
+    isOnline: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -74,6 +75,7 @@ export const get = query({
       role: user.role,
       githubUsername: user.githubUsername,
       clerkId: user.clerkId,
+      isOnline: user.isOnline,
     };
   },
 });

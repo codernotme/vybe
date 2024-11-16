@@ -2,16 +2,19 @@
 
 import ItemList from "@/components/shared/item-list/ItemList";
 import { useQuery } from "convex/react";
-import React from "react";
+import React, { useState } from "react";
 import { Loader2Icon } from "lucide-react";
 import DirectMessage from "./_components/DirectMessage";
 import GroupDialog from "./_components/GroupDialog";
 import GroupConvoItem from "./_components/GroupConvoItem";
 import { api } from "../../../../../convex/_generated/api";
+import { Button } from "@/components/ui/button";
+
 
 type Props = React.PropsWithChildren<{}>;
 
 const ConversationLayout = ({ children }: Props) => {
+  const [showAnonymousChat, setShowAnonymousChat] = useState(false);
   const conversations = useQuery(api.conversations.get);
   return (
     <>
