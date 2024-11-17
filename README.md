@@ -1,6 +1,6 @@
-# VYBE - Connect, Collaborate, and Thrive at PSIT 🚀
+# VYBE - Connect, Collaborate, and Thrive 🚀
 
-VYBE is an exclusive social media platform designed to connect students, mentors, and communities within PSIT. It fosters collaboration, builds communities, and promotes mentorship through a unique social experience tailored specifically for the campus.
+VYBE is an exclusive social media platform designed to connect students, mentors, and communities within colleges. It fosters collaboration, builds communities, and promotes mentorship through a unique social experience tailored specifically for the campus.
 
 ## 🛠️ Tech Stack
 - **Frontend**: Next.js, NextUI, TypeScript, TailwindCSS
