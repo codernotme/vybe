@@ -35,6 +35,16 @@ const validatePayload = async (req: Request): Promise<WebhookEvent | undefined> 
   }
 };
 
+const generateAnonymousUsername = (userId: string) => {
+  const date = new Date();
+  const day = date.getDate();
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  const seed = `${userId}-${day}-${month}-${year}`;
+  const hash = Array.from(seed).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return `anonymous user ${hash % 1000}`;
+};
+
 // Function to handle the Clerk webhook
 const handleClerkWebhook = httpAction(async (ctx, req) => {
   // Validate the incoming request payload
@@ -72,6 +82,7 @@ const handleClerkWebhook = httpAction(async (ctx, req) => {
             githubUsername: "", // Optional GitHub ID (if available)
             role: 'member', // Default role to 'user' if not provided
             isOnline: true, // Set the user as online when created
+            anonymousUsername: generateAnonymousUsername(event.data.id),
           });
         }
         break;

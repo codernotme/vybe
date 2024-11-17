@@ -1,10 +1,11 @@
 import React from "react";
+import Home from "../home/page";
 
 export default function CommunityPage() {
   return (
     <>
       <div>
-        <h1>Community Page</h1>
+        <Home />
       </div>
     </>
   );

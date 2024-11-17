@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from "convex/server"; // Ensure this import is correct
 import { v } from "convex/values"; // Ensure this import is correct
+import { user } from '@nextui-org/react';
 
 export default defineSchema({
   // Define the "users" table to store user information
@@ -15,6 +16,7 @@ export default defineSchema({
     isOnline: v.optional(v.boolean()),
     description: v.optional(v.string()),
     interests: v.optional(v.array(v.string())),
+    anonymousUsername: v.optional(v.string()), // Add anonymousUsername field
   })
     .index("by_username", ["username"])
     .index("by_clerkId", ["clerkId"])
@@ -71,6 +73,7 @@ export default defineSchema({
     videoUrl: v.optional(v.string()), // URL of the video associated with the post
     gifUrl: v.optional(v.string()), // URL of the GIF associated with the post
     type: v.string(), // Type of the post (text, image, video, audio)
+    userRole: v.string(), // Role of the user who created the post
     likesCount: v.number(), // Number of likes on the post
   }).index("by_userId", ["userId"]),
 
@@ -138,6 +141,7 @@ export default defineSchema({
     userId: v.optional(v.string()), // Make userId optional
     randomUser: v.optional(v.string()), // Add randomUser field
     timestamp: v.number(),
+    anonymousUsername: v.string(), // Add anonymousUsername field
   })
     .index("by_userId", ["userId"]),
 
@@ -148,8 +152,30 @@ export default defineSchema({
     timestamp: v.number(),
     isAnonymous: v.boolean(), // Add isAnonymous field
     duration: v.number(), // Add duration field
+    imageUrl: v.optional(v.string()), // Add imageUrl field
+    gifUrl: v.optional(v.string()), // Add gifUrl field
+    pdfUrl: v.optional(v.string()), // Add pdfUrl field
+    anonymousUsername: v.string(), // Add anonymousUsername field
+    _creationTime: v.number(), // Change _creationTime field to number
   })
     .index("by_userId", ["userId"]),
+
+  // Define the "anonymousComments" table to store comments on anonymous posts
+  anonymousComments: defineTable({
+    postId: v.id("anonymousPost"), // ID of the anonymous post the comment belongs to
+    userId: v.optional(v.string()), // ID of the user who made the comment (optional)
+    content: v.string(), // Content of the comment
+    timestamp: v.number(), // Timestamp of the comment
+    username: v.optional(v.string()), // Username of the user who made the comment (optional)
+  })
+    .index("by_postId", ["postId"])
+    .index("by_userId", ["userId"]),
+
+  // Define the "anonymousLikes" table to store likes on anonymous posts
+  anonymousLikes: defineTable({
+    postId: v.id("anonymousPost"), // The ID of the liked post
+    userId: v.optional(v.string()), // The ID of the user who liked the post (optional)
+  }).index("by_post_and_user", ["postId", "userId"]),
 
   // Define the "events" table to store event information
   events: defineTable({

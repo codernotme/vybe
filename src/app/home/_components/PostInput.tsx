@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { useDropzone } from "react-dropzone";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,10 +12,7 @@ import {
 import { Image } from "@nextui-org/image";
 import { api } from "../../../../convex/_generated/api";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Id } from "../../../../convex/_generated/dataModel";
-import CommentInput from "./commentInput";
-import { Trash2 } from "lucide-react";
-import { Textarea } from "@nextui-org/input";
+import { Input, Textarea } from "@nextui-org/input";
 import { toast } from "sonner";
 import styled from "styled-components";
 
@@ -42,12 +38,15 @@ const ExpandableText = ({ content }: { content: string }) => {
 };
 
 export default function PostInput() {
+  const user = useQuery(api.users.get); // Fetch user details
   const posts = useQuery(api.posts.get);
   const [postText, setPostText] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
+  const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
   const createPost = useMutation(api.post.create);
+  const addAnonymousPost = useMutation(api.anonymousPost.addPost); // Mutation for anonymous posts
+  const [isAnonymous, setIsAnonymous] = useState(false); // Switch for anonymous posts
   const [fileUploaded, setFileUploaded] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
 
@@ -64,8 +63,8 @@ export default function PostInput() {
         } else {
           setSelectedImage(reader.result as string);
         }
-      } else if (fileType.startsWith("video/")) {
-        setSelectedVideo(reader.result as string);
+      } else if (fileType === "application/pdf") {
+        setSelectedPdf(reader.result as string);
       }
 
       setFileUploaded(true);
@@ -78,18 +77,18 @@ export default function PostInput() {
     onDrop,
     accept: {
       "image/*": [".jpg", ".jpeg", ".png"],
-      "video/*": [".mp4", ".mov"],
+      "application/pdf": [".pdf"],
       "gif/*": [".gif"],
     },
   });
 
   const handlePost = async () => {
     const isPostValid =
-      postText?.trim() !== "" || selectedImage || selectedVideo || selectedGif;
+      postText?.trim() !== "" || selectedImage || selectedGif || selectedPdf;
 
     if (!isPostValid) {
       toast.error(
-        "Please add text or select an image, video, or GIF to create a post."
+        "Please add text or select an image, or GIF to create a post."
       );
       return;
     }
@@ -97,41 +96,66 @@ export default function PostInput() {
     setIsPosting(true);
 
     try {
-      await createPost({
-        type: selectedImage
-          ? "image"
-          : selectedVideo
-            ? "video"
+      const postData = {
+        text: postText,
+        userId: user?._id?.toString() ?? undefined,
+        isAnonymous,
+        duration: isAnonymous ? 24 * 60 * 60 * 1000 : 0,
+        imageUrl: selectedImage ?? undefined,
+        gifUrl: selectedGif ?? undefined,
+        pdfUrl: selectedPdf ?? undefined,
+      };
+
+      if (isAnonymous) {
+        await addAnonymousPost(postData);
+        toast.success("Anonymous post created successfully!");
+      } else {
+        await createPost({
+          type: selectedImage
+            ? "image"
             : selectedGif
               ? "gif"
-              : "text",
-        content: postText ?? undefined,
-        imageUrl: selectedImage ?? undefined,
-        videoUrl: selectedVideo ?? undefined,
-        gifUrl: selectedGif ?? undefined,
-      });
+              : selectedPdf
+                ? "pdf"
+                : "text",
+          content: postText ?? undefined,
+          imageUrl: selectedImage ?? undefined,
+          gifUrl: selectedGif ?? undefined,
+          pdfUrl: selectedPdf ?? undefined,
+          _creationTime: Date.now(), // Add _creationTime
+        } as {
+          type: string;
+          content?: string;
+          imageUrl?: string;
+          gifUrl?: string;
+          pdfUrl?: string;
+          _creationTime: number;
+        });
+        toast.success("Post created successfully!", {
+          icon: "📝",
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        });
+      }
 
-      toast.success("Post created successfully!", {
-        icon: "📝",
-        style: {
-          borderRadius: "10px",
-          background: "#333",
-          color: "#fff",
-        },
-      });
+      // Reset the form
       setSelectedImage(null);
-      setSelectedVideo(null);
       setSelectedGif(null);
+      setSelectedPdf(null);
       setPostText("");
       setFileUploaded(false);
     } catch (error) {
+      console.error("Error creating post:", error); // Log the error
       toast.error("Failed to create post. Please try again.");
     } finally {
       setIsPosting(false);
     }
   };
 
-  if (!posts) {
+  if (!posts || !user) {
     return (
       <div className="container mx-auto sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl rounded-xl space-y-4 p-4">
         {[...Array(3)].map((_, idx) => (
@@ -140,6 +164,9 @@ export default function PostInput() {
       </div>
     );
   }
+
+  // Ensure only users with role "tech" see the anonymous post option
+  const canPostAnonymously = user.role === "tech";
 
   return (
     <div className="justify-between items-center mx-auto max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl space-y-6 p-4 top-0">
@@ -157,38 +184,32 @@ export default function PostInput() {
               onChange={(e) => setPostText(e.target.value)}
               className="w-full min-h-[100px] bg-secondary border-gray-300 focus:border-gray-500 rounded-lg resize-none transition-colors duration-300"
             />
+            {canPostAnonymously && (
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={isAnonymous}
+                  onChange={() => setIsAnonymous(!isAnonymous)}
+                  className="form-checkbox h-5 w-5 text-blue-600"
+                  title="Post Anonymously"
+                />
+                <label className="text-gray-700 dark:text-gray-300">
+                  Post Anonymously
+                </label>
+              </div>
+            )}
+
             <div
               {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-4 transition-colors ${isDragActive ? "border-blue-500" : "border-gray-300"} bg-secondary`}
+              className={`border-2 border-dashed rounded-lg p-4 transition-colors ${
+                isDragActive ? "border-blue-500" : "border-gray-300"
+              } bg-secondary`}
             >
               <input {...getInputProps()} />
               {isDragActive ? (
                 <p className="text-center">Drop the files here ...</p>
               ) : (
                 <div>
-                  <div className="flex items-center justify-center max-w-[100px]">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill=""
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                      <g
-                        id="SVGRepo_tracerCarrier"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></g>
-                      <g id="SVGRepo_iconCarrier">
-                        {" "}
-                        <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z"
-                          fill=""
-                        ></path>{" "}
-                      </g>
-                    </svg>
-                  </div>
                   <p className="text-center">
                     Drag & drop files here, or click to select files
                   </p>
@@ -205,10 +226,10 @@ export default function PostInput() {
                     onClick={() => {
                       setFileUploaded(false);
                       setSelectedImage(null);
-                      setSelectedVideo(null);
                       setSelectedGif(null);
+                      setSelectedPdf(null);
                     }}
-                    className=" hover:text-red-700"
+                    className="hover:text-red-700"
                   >
                     Remove
                   </Button>
@@ -222,13 +243,6 @@ export default function PostInput() {
                     className="mt-2 rounded-md object-cover"
                   />
                 )}
-                {selectedVideo && (
-                  <video
-                    src={selectedVideo}
-                    controls
-                    className="mt-2 max-w-full h-auto rounded-md"
-                  />
-                )}
                 {selectedGif && (
                   <Image
                     src={selectedGif}
@@ -238,29 +252,35 @@ export default function PostInput() {
                     className="mt-2 rounded-md object-cover"
                   />
                 )}
+                {selectedPdf && (
+                  <embed
+                    src={selectedPdf}
+                    type="application/pdf"
+                    width="100%"
+                    height="500px"
+                    className="mt-2 rounded-md"
+                  />
+                )}
               </div>
             )}
           </CardContent>
           <CardFooter className="flex justify-end">
             <StyledWrapper>
-              <button onClick={handlePost} disabled={isPosting}>
-                <div className="svg-wrapper-1">
-                  <div className="svg-wrapper">
-                    <svg
-                      height="24"
-                      width="24"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M0 0h24v24H0z" fill="none" />
-                      <path
-                        d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </div>
+              <button
+                onClick={handlePost}
+                disabled={isPosting}
+                className="bg-gradient-to-r from-blue-400 to-purple-600 text-white font-bold py-2 px-4 rounded-md shadow-lg hover:from-blue-500 hover:to-purple-700 transition-transform transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="state" id="moon">
+                  {isPosting ? "Posting..." : "Send"}
                 </div>
-                <span>Post</span>
+                <div className="state" id="sun">
+                  {isPosting ? "Posting..." : "Send"}
+                </div>
+                <span className="lightRotation" />
+                <span className="lightRotation2" />
+                <span className="lightRotation3" />
+                <span className="lightRotation4" />
               </button>
             </StyledWrapper>
           </CardFooter>
@@ -272,74 +292,137 @@ export default function PostInput() {
 
 const StyledWrapper = styled.div`
   button {
-    font-family: inherit;
-    font-size: 18px;
-    background: linear-gradient(to bottom, #4dc7d9 0%, #66a6ff 100%);
-    color: white;
-    padding: 0.8em 1.2em;
+    --sunGradient: linear-gradient(
+      60deg,
+      #3d3393 0%,
+      #2b76b9 37%,
+      #2cacd1 65%,
+      #35eb93 100%
+    );
+    --moonGradient: linear-gradient(to top, #cc208e 0%, #6713d2 100%);
     display: flex;
-    align-items: center;
     justify-content: center;
-    border: none;
-    border-radius: 25px;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s;
+    align-items: center;
+    position: relative;
+    width: 140px;
+    height: 60px;
+    color: white;
+    font-size: 1em;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 15px;
+    background-color: transparent;
+    transition: 0.5s;
+    overflow: hidden;
+    border: 4px solid black;
   }
 
   button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
-    padding: 0em;
-    background: linear-gradient(to bottom, #5bd9ec 0%, #97c3ff 100%);
-    cursor: pointer;
-  }
-
-  button:active {
-    transform: scale(0.95);
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-  }
-
-  button span {
-    display: block;
-    margin-left: 0.4em;
-    transition: all 0.3s;
+    box-shadow: -15px -15px 500px white;
+    transition: 0.2s;
   }
 
   button:hover span {
-    scale: 0;
-    font-size: 0%;
-    opacity: 0;
-    transition: all 0.5s;
+    background: var(--sunGradient);
   }
 
-  button svg {
-    width: 18px;
-    height: 18px;
-    fill: white;
-    transition: all 0.3s;
-  }
-
-  button .svg-wrapper {
+  .state {
+    position: absolute;
     display: flex;
-    align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.2);
-    transition: all 0.3s;
+    align-items: center;
+    border-radius: inherit;
+    transition: 0.4s;
+    width: 85%;
+    height: 82%;
+    border: 4px solid black;
   }
 
-  button:hover .svg-wrapper {
-    background-color: rgba(43, 169, 228, 0.897);
-    width: 54px;
-    height: 54px;
+  #sun {
+    display: none;
+    background-color: #212121;
+    opacity: 0.85;
   }
 
-  button:hover svg {
-    width: 25px;
-    height: 25px;
-    margin-right: 5px;
-    transform: rotate(45deg);
+  #moon {
+    background-color: #212121;
+    opacity: 0.85;
+  }
+
+  button:hover #sun {
+    display: flex;
+  }
+
+  button:hover #moon {
+    display: none;
+  }
+
+  button:hover .lightRotation {
+    animation: 1s linear reverse infinite rotation413;
+  }
+
+  button:hover .lightRotation2 {
+    animation: 2s linear infinite rotation_413;
+  }
+
+  button:hover .lightRotation3 {
+    animation: 10s linear reverse infinite rotation_413;
+  }
+
+  button:hover .lightRotation4 {
+    animation: 3s linear infinite rotation_413;
+  }
+
+  .lightRotation {
+    position: absolute;
+    transition: 0.4s;
+    z-index: -1;
+    width: 60px;
+    height: 500px;
+    transform: rotate(50deg);
+    border-radius: inherit;
+    background: var(--moonGradient);
+  }
+
+  .lightRotation2 {
+    position: absolute;
+    transition: 0.4s;
+    z-index: -1;
+    width: 75px;
+    height: 500px;
+    transform: rotate(110deg);
+    border-radius: inherit;
+    background: var(--moonGradient);
+  }
+
+  .lightRotation3 {
+    position: absolute;
+    transition: 0.4s;
+    z-index: -1;
+    width: 40px;
+    height: 260px;
+    border-radius: inherit;
+    background: var(--moonGradient);
+  }
+
+  .lightRotation4 {
+    position: absolute;
+    transition: 0.4s;
+    z-index: -1;
+    width: 24px;
+    height: 220px;
+    transform: rotate(100deg);
+    border-radius: inherit;
+    background: var(--moonGradient);
+  }
+
+  @keyframes rotation_413 {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
   }
 `;

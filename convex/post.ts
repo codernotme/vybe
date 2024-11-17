@@ -2,7 +2,6 @@ import { ConvexError, v } from "convex/values";
 import { mutation } from "./_generated/server";
 import { getUserByClerkId } from "./_utils";
 
-
 export const deletePostByAdmin = mutation({
   args: {
     postId: v.id("posts"),
@@ -17,7 +16,6 @@ export const deletePostByAdmin = mutation({
     await ctx.db.delete(postId);
   },
 });
-
 
 // Mutation to create a new post
 export const create = mutation({
@@ -48,12 +46,14 @@ export const create = mutation({
     // Construct the new post data
     const postData = {
       userId: currentUser._id,   // Current user ID
+      userRole: currentUser.role, // Add user role
       likesCount: 0,             // Initial likes count
       type,                      // Post type (required)
       content: content || "",    // Optional content (empty string if undefined)
       imageUrl: imageUrl || undefined, // Optional image URL (undefined if not provided)
       videoUrl: videoUrl || undefined,  // Optional video URL (undefined if not provided)
       gifUrl: gifUrl || undefined,
+      _creationTime: new Date().toISOString(), // Add creation time
     };
 
     // Insert the new post into the "posts" collection
@@ -62,7 +62,6 @@ export const create = mutation({
     return newPost;  // Return the newly created post
   },
 });
-
 
 export const deletePost = mutation({
   args: {
@@ -100,6 +99,7 @@ export const createComment = mutation({
       postId,            // Post ID
       userId: currentUser._id,   // Current user ID
       content,            // Comment content
+      _creationTime: new Date().toISOString(), // Add creation time
     };
 
     // Insert the new comment into the "comments" collection
@@ -126,7 +126,6 @@ export const deleteComment = mutation({
       ctx,
       clerkId: identity.subject,
     });
-    
     if (!currentUser) {
       throw new ConvexError("User not found. Please check your account.");
     }

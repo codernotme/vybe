@@ -29,12 +29,13 @@ const chatSchema = z.object({
 
 // Define Props type correctly
 type Props = {
-  postId: Id<"posts">; // Ensure postId is of the correct type
+  postId: Id<"posts"> | Id<"anonymousPost">; // Allow postId to be of either type
+  isAnonymous?: boolean; // Add a flag to indicate if the post is anonymous
 };
 
-const ChatInput: React.FC<Props> = ({ postId }) => {
+const ChatInput: React.FC<Props> = ({ postId, isAnonymous = false }) => {
   const { mutate: createComment, pending } = UseMutationState(
-    api.post.createComment
+    isAnonymous ? api.anonymousPost.addComment : api.post.createComment // Use the appropriate mutation
   );
 
   const form = useForm<z.infer<typeof chatSchema>>({

@@ -2,6 +2,16 @@ import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getUserByClerkId } from "./_utils";
 
+const generateAnonymousUsername = (userId: string) => {
+  const date = new Date();
+  const day = date.getDate();
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  const seed = `${userId}-${day}-${month}-${year}`;
+  const hash = Array.from(seed).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return `anonymous user ${hash % 1000}`;
+};
+
 // Mutation to update user data by Clerk ID
 export const update = mutation({
   args: v.object({
@@ -33,9 +43,10 @@ export const update = mutation({
       throw new ConvexError("User not found in the database");
     }
 
-    const updatedFields = Object.fromEntries(
-      Object.entries(args).filter(([_, value]) => value !== undefined)
-    );
+    const updatedFields = {
+      ...args,
+      anonymousUsername: generateAnonymousUsername(args.clerkId)
+    };
 
     await ctx.db.patch(user._id, updatedFields);
 
@@ -94,16 +105,16 @@ export const search = query({
         .collect();
       return users.map((user) => ({
         _id: user._id,
-      name: user.name,
-      username: user.username,
-      email: user.email,
-      imageUrl: user.imageUrl,
-      role: user.role,
-      githubUsername: user.githubUsername,
-      clerkId: user.clerkId,
-      isOnline: user.isOnline,
-      description: user.description,
-      interests: user.interests,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        imageUrl: user.imageUrl,
+        role: user.role,
+        githubUsername: user.githubUsername,
+        clerkId: user.clerkId,
+        isOnline: user.isOnline,
+        description: user.description,
+        interests: user.interests,
       }));
     } catch (error) {
       console.error("Error fetching users:", error);

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { useDropzone } from "react-dropzone";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,7 +15,7 @@ import { api } from "../../../../convex/_generated/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Id } from "../../../../convex/_generated/dataModel";
 import CommentInput from "./commentInput";
-import { Heart, Share2, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Share2, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/dialog";
 import Link from "next/link";
 import { ChatBubbleIcon } from "@radix-ui/react-icons";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 
 const ExpandableText = ({ content }: { content: string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -90,10 +92,237 @@ const CommentSection = ({
           </Button>
         </div>
       ))}
-      <CommentInput postId={postId} />
+      <CommentInput postId={postId} isAnonymous={false} />
     </div>
   );
 };
+
+const generateAnonymousUsername = (userId: string) => {
+  const date = new Date();
+  const day = date.getDate();
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  const seed = `${userId}-${day}-${month}-${year}`;
+  const hash = Array.from(seed).reduce(
+    (acc, char) => acc + char.charCodeAt(0),
+    0
+  );
+  return `anonymous user ${hash % 1000}`;
+};
+
+const AnonyCommentSection = ({
+  postId,
+  isVisible,
+  handleDeleteComment,
+}: {
+  postId: Id<"anonymousPost">;
+  isVisible: boolean;
+  handleDeleteComment: (commentId: Id<"anonymousComments">) => void;
+}) => {
+  const comments = useQuery(api.anonymousPost.getComments, { postId });
+
+  if (!comments) {
+    return <Skeleton className="h-20 w-full" />;
+  }
+
+  const userMap = new Map();
+  comments.forEach((comment: any) => {
+    if (!userMap.has(comment.userId)) {
+      userMap.set(comment.userId, generateAnonymousUsername(comment.userId));
+    }
+  });
+
+  return (
+    <div className={`mt-4 ${isVisible ? "block" : "hidden"}`}>
+      <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+        {comments.map((comment: any) => (
+          <div
+            key={comment._id}
+            className="flex items-start space-x-4 mb-4 bg-muted rounded-lg p-2"
+          >
+            <Avatar className="w-8 h-8 bg-black">
+              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarFallback>AB</AvatarFallback>
+            </Avatar>
+            <div className="flex-grow space-y-1">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">
+                  {userMap.get(comment.userId)}
+                </p>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDeleteComment(comment._id)}
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground">{comment.content}</p>
+            </div>
+          </div>
+        ))}
+      </ScrollArea>
+      <Separator className="my-4" />
+      <CommentInput postId={postId} isAnonymous={true} />
+    </div>
+  );
+};
+
+const AnonyPostPage = () => {
+  const posts = useQuery(api.anonymousPost.getPosts);
+  const deletePost = useMutation(api.anonymousPost.deletePost);
+  const deleteComment = useMutation(api.anonymousPost.deleteComment);
+  const currentUser = useQuery(api.users.get);
+  const currentUserId = currentUser?._id;
+  const [expandedPostId, setExpandedPostId] =
+    useState<Id<"anonymousPost"> | null>(null);
+
+  const handleDelete = async (postId: Id<"anonymousPost">) => {
+    try {
+      if (currentUserId) {
+        await deletePost({ postId, userId: currentUserId });
+      } else {
+        console.error("User ID is undefined");
+      }
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: Id<"anonymousComments">) => {
+    try {
+      await deleteComment({ commentId });
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
+    }
+  };
+
+  const toggleComments = (postId: Id<"anonymousPost">) => {
+    setExpandedPostId(expandedPostId === postId ? null : postId);
+  };
+
+  const likePost = useMutation(api.anonymousPost.like);
+
+  const handleLike = async (postId: Id<"anonymousPost">) => {
+    try {
+      await likePost({ postId });
+    } catch (error) {
+      console.error("Failed to like post:", error);
+    }
+  };
+
+  if (!posts) {
+    return (
+      <div className="space-y-4">
+        {[...Array(3)].map((_, idx) => (
+          <Skeleton key={idx} className="h-[200px] w-full rounded-lg" />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="justify-between items-center max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl">
+      {posts.map((post: any) => (
+        <Card
+          key={post._id}
+          className={` bg-background overflow-hidden max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-2 items-center justify-between shadow-lg rounded-lg border-cyan-500`}
+        >
+          <CardHeader className="flex flex-row justify-between items-center bg-secondary-200 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <Avatar className="w-10 h-10">
+                <AvatarImage src="https://images.unsplash.com/broken" />
+                <AvatarFallback>
+                  {post.isAnonymous ? "AB" : post.userId?.[0]}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+            {post.userId === currentUserId && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleDelete(post._id)}
+                className="text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 className="h-5 w-5" />
+              </Button>
+            )}
+          </CardHeader>
+          <CardContent className="pt-4">
+            <p className="mb-4">{post.text}</p>
+            {post.imageUrl && (
+              <div className="relative h-64 w-full mb-4">
+                <Image
+                  src={post.imageUrl}
+                  alt="Post content"
+                  style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                  className="rounded-md"
+                />
+              </div>
+            )}
+            {post.videoUrl && (
+              <video
+                src={post.videoUrl}
+                controls
+                className="w-full rounded-md mb-4"
+              />
+            )}
+            {post.gifUrl && (
+              <div className="relative h-64 w-full mb-4">
+                <Image
+                  src={post.gifUrl}
+                  alt="Post GIF"
+                  style={{ objectFit: "contain" }}
+                  className="rounded-md"
+                />
+              </div>
+            )}
+            {post.audioUrl && (
+              <audio src={post.audioUrl} controls className="w-full mb-4" />
+            )}
+            {post.pdfUrl && (
+              <a
+                href={post.pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                View PDF
+              </a>
+            )}
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground"
+              onClick={() => handleLike(post._id)}
+            >
+              <Heart className="h-5 w-5 mr-1" />
+              Like
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => toggleComments(post._id)}
+              className="text-muted-foreground"
+            >
+              <MessageCircle className="h-5 w-5 mr-1" />
+              Comment
+            </Button>
+          </CardFooter>
+          <AnonyCommentSection
+            postId={post._id}
+            isVisible={expandedPostId === post._id}
+            handleDeleteComment={handleDeleteComment}
+          />
+        </Card>
+      ))}
+    </div>
+  );
+};
+
 
 export default function PostPage() {
   const posts = useQuery(api.posts.get);
@@ -143,6 +372,7 @@ export default function PostPage() {
   }
   return (
     <div className="justify-between items-center mx-auto max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl space-y-6 p-4 top-0">
+      <AnonyPostPage /> {/* Call AnonyPostPage here */}
       {posts.map((post: any) => (
         <Card
           key={post.post._id}
