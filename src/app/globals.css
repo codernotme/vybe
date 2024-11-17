@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -58,16 +57,38 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+
+  .neobrutalism {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 0 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 90%;
+    --muted-foreground: 0 0% 50%;
+    --accent: 0 0% 100%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 0%;
+    --input: 0 0% 100%;
+    --ring: 0 0% 0%;
+    --radius: 0.5rem;
+  }
 }
 
 @font-face {
   font-family: 'SpicyRice';
   src: url('../../public/fonts/SpicyRice-Regular.ttf');
-  
 }
 
-.logo{
-    font-family: 'SpicyRice';
+.logo {
+  font-family: 'SpicyRice';
 }
 
 @layer base {
@@ -77,6 +98,15 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Ensure theme switching works well */
+  .theme-dark {
+    @apply dark;
+  }
+
+  .theme-neobrutalism {
+    @apply neobrutalism;
   }
 }
 
@@ -125,23 +155,26 @@
   }
 }
 
-
 .container {
   max-width: 1200px;
   width: 100%;
   padding: 20px;
   text-align: center;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 .header {
   font-size: 2.5rem;
   margin-bottom: 20px;
+  color: var(--foreground);
 }
 
 .video-player {
   margin-bottom: 20px;
   display: flex;
   justify-content: center;
+  background-color: var(--background);
 }
 
 .video-iframe {
@@ -150,10 +183,12 @@
   height: 450px;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  background-color: var(--background);
 }
 
 .video-search {
   margin-top: 20px;
+  background-color: var(--background);
 }
 
 .search-input {
@@ -163,6 +198,8 @@
   border: 1px solid #ccc;
   margin-right: 10px;
   outline: none;
+  background-color: var(--input);
+  color: var(--foreground);
 }
 
 .search-button {
@@ -173,6 +210,8 @@
   color: white;
   cursor: pointer;
   transition: background-color 0.3s;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .search-button:hover {
@@ -184,6 +223,7 @@
   flex-wrap: wrap;
   justify-content: center;
   margin-top: 10px;
+  background-color: var(--background);
 }
 
 .video-card {
@@ -193,6 +233,8 @@
   margin: 10px;
   overflow: hidden;
   transition: transform 0.3s;
+  background-color: var(--card);
+  color: var(--card-foreground);
 }
 
 .video-card:hover {
@@ -202,15 +244,15 @@
 .video-thumbnail {
   width: 100%;
   height: auto;
+  background-color: var(--background);
 }
 
 .video-title {
   padding: 10px;
   text-align: center;
   font-size: 1.2rem;
+  color: var(--foreground);
 }
-
-
 
 .custum-file-upload {
   height: auto; /* Change to auto for responsiveness */
@@ -228,6 +270,8 @@
   border-radius: 10px;
   box-shadow: 0px 48px 35px -48px #e8e8e8;
   margin: 0 auto; /* Center the element */
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 .custum-file-upload .icon {
@@ -240,6 +284,7 @@
   height: 20vw; /* Use relative unit for responsiveness */
   max-height: 80px; /* Set a max height */
   fill: #e8e8e8;
+  fill: var(--foreground);
 }
 
 .custum-file-upload .text {
@@ -251,6 +296,7 @@
 .custum-file-upload .text span {
   font-weight: 400;
   color: #e8e8e8;
+  color: var(--foreground);
 }
 
 .custum-file-upload input {
@@ -278,8 +324,6 @@
   }
 }
 
-
-
 .button {
   --primary: #ff5569; /* Accent color */
   --neutral-1: #2e2e2e; /* Dark background */
@@ -306,6 +350,8 @@
   font-weight: 600;
   color: #ffffff; /* Text color */
   background: var(--neutral-1); /* Button background */
+  background-color: var(--primary);
+  color: var(--primary-foreground);
 }
 .button:hover {
   transform: scale(1.02);
@@ -440,7 +486,7 @@
   }
   30% {
     opacity: 1;
-    transform: translateY(4px) translateX(0) rotate(0);
+    transform: translateY(4px) translateX(0);
     filter: blur(0);
   }
   50% {
@@ -587,8 +633,6 @@
     transform: scale(1);
   }
 }
-
-
 
 @keyframes square-animation {
   0% {

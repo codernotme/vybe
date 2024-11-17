@@ -65,13 +65,7 @@ export default function VybeLandingPage() {
   if (!mounted) return null
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode ? "bg-gray-900 text-white" : "bg-white text-black"
-      } transition-all duration-300`}
-    >
-
-
+    <div className={`neobrutalism min-h-screen ${darkMode ? "bg-[#1a1a1a] text-white" : "bg-[#f0f0f0] text-black"} transition-all duration-300 font-sans`}>
       {/* Hero Section */}
       <header id="home" ref={heroRef} className="container mx-auto px-9 py-40 text-center relative overflow-hidden">
         <motion.div
@@ -94,7 +88,7 @@ export default function VybeLandingPage() {
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               onClick={onOpen}
-              className="bg-[#ff3b3f] hover:bg-[#ff8e3c] text-white font-bold py-4 px-8 rounded-full transition-transform duration-300"
+              className="bg-[#ff3b3f] hover:bg-[#ff8e3c] text-white font-bold py-4 px-8 rounded-none border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
             >
               Join Now
             </Button>
@@ -115,7 +109,7 @@ export default function VybeLandingPage() {
       </header>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" backdrop="opaque" className="items-center justify-center p-8">
-        <ModalContent className="max-w-[600px]">
+        <ModalContent className="max-w-[600px] border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <ModalBody>
             <AuthCard />
           </ModalBody>
@@ -135,9 +129,9 @@ export default function VybeLandingPage() {
           ].map((feature, idx) => (
             <motion.div
               key={idx}
-              className={`p-8 rounded-xl shadow-lg hover:shadow-2xl ${
-                darkMode ? "bg-gray-800" : "bg-white"
-              } relative overflow-hidden`}
+              className={`p-8 rounded-none border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] ${
+                darkMode ? "bg-[#2a2a2a]" : "bg-[#ffffff]"
+              } relative overflow-hidden transition-all duration-300 hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
               whileHover={{ scale: 1.05, rotate: [0, 1, -1, 0] }}
               transition={{ type: "spring", stiffness: 300 }}
             >
@@ -186,22 +180,22 @@ export default function VybeLandingPage() {
           viewport={{ once: true }}
         >
           <div className="mb-6">
-            <Input type="text" placeholder="Your Name" className="w-full" />
+            <Input type="text" placeholder="Your Name" className="w-full border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" />
           </div>
           <div className="mb-6">
-            <Input type="email" placeholder="Your Email" className="w-full" />
+            <Input type="email" placeholder="Your Email" className="w-full border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" />
           </div>
           <div className="mb-6">
             <textarea
               placeholder="Your Message"
               rows={4}
-              className={`w-full p-3 rounded-md ${
-                darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
-              } border border-gray-300`}
+              className={`w-full p-3 rounded-none border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${
+                darkMode ? "bg-[#2a2a2a] text-white" : "bg-white text-black"
+              }`}
             ></textarea>
           </div>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button className="w-full bg-[#ff3b3f] hover:bg-[#ff8e3c] text-white font-bold py-3 rounded-md transition-colors duration-300">
+            <Button className="w-full bg-[#ff3b3f] hover:bg-[#ff8e3c] text-white font-bold py-3 rounded-none border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               Send Message
             </Button>
           </motion.div>
@@ -209,7 +203,7 @@ export default function VybeLandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className={`py-8 ${darkMode ? "bg-gray-800" : "bg-gray-100"}`}>
+      <footer className={`py-8 ${darkMode ? "bg-[#2a2a2a]" : "bg-[#e0e0e0]"} border-t-4 border-black`}>
         <div className="container mx-auto px-6 text-center">
           <p>&copy; 2023 VYBE. All rights reserved.</p>
           <div className="mt-4 flex justify-center space-x-4">
@@ -217,7 +211,7 @@ export default function VybeLandingPage() {
               <a
                 key={social}
                 href="#"
-                className="text-[#ff3b3f] hover:text-[#ff8e3c] transition-colors duration-300"
+                className="text-[#ff3b3f] hover:text-[#ff8e3c] transition-colors duration-300 font-bold"
               >
                 {social}
               </a>
@@ -238,7 +232,7 @@ export default function VybeLandingPage() {
           >
             <Tooltip content="Scroll to Top">
               <motion.button
-                className="p-4 rounded-full bg-[#ff3b3f] text-white shadow-lg"
+                className="p-4 rounded-none bg-[#ff3b3f] text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-4 border-black transition-all duration-300 hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                 onClick={scrollToTop}
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.95 }}
