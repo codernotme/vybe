@@ -74,7 +74,7 @@ const Message = ({
         >
           {type === "text" && (
             <p className="text-sm break-words whitespace-pre-wrap break-all">
-              {content}
+              {content.join(" ")}
             </p>
           )}
 

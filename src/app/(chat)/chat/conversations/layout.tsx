@@ -7,18 +7,16 @@ import { Loader2Icon } from "lucide-react";
 import DirectMessage from "./_components/DirectMessage";
 import GroupDialog from "./_components/GroupDialog";
 import GroupConvoItem from "./_components/GroupConvoItem";
+import CommunityDialog from "./_components/CommunityDialog";
 import { api } from "../../../../../convex/_generated/api";
-import { Button } from "@/components/ui/button";
-
 
 type Props = React.PropsWithChildren<{}>;
 
 const ConversationLayout = ({ children }: Props) => {
-  const [showAnonymousChat, setShowAnonymousChat] = useState(false);
   const conversations = useQuery(api.conversations.get);
   return (
     <>
-      <ItemList title="Messages" action={<GroupDialog />}>
+      <ItemList title="Messages" action={[<GroupDialog key="group" />, <CommunityDialog key="community" />]}>
         {conversations ? (
           conversations.length === 0 ? (
             <p className="w-full h-full flex items-center justify-center">

@@ -43,7 +43,7 @@ export const useNavigation = () => {
       },
       {
         name: "Discussions",
-        href: "/community/discussions",
+        href: "/chat/conversations",
         icon: <ChatBubbleIcon className="h-6 w-6" />,
         active: pathname === "/community/discussions",
       },

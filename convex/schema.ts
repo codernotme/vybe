@@ -186,5 +186,14 @@ export default defineSchema({
     createdBy: v.optional(v.id("users")), // ID of the user who created the event
     attendees: v.optional(v.array(v.id("users"))), // Optional array of user IDs who are attending the event
   }).index("by_createdBy", ["createdBy"]),
+
+  // Define the "communityChatGroups" table to store community chat group information
+  communityChatGroups: defineTable({
+    name: v.string(),
+    ownerId: v.id("users"),
+    members: v.array(v.id("users")),
+    conversationId: v.id("conversations"),
+  })
+    .index("by_ownerId", ["ownerId"]),
 });
 

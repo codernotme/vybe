@@ -1,7 +1,8 @@
 import { ConvexError } from "convex/values";
-import { query, QueryCtx, MutationCtx } from './_generated/server';
+import { query, QueryCtx, MutationCtx, mutation } from "./_generated/server";
 import { getUserByClerkId } from "./_utils";
-import { Id } from './_generated/dataModel';
+import { Id } from "./_generated/dataModel";
+import { v } from "convex/values";
 
 // Define the query to fetch conversations for the current user
 export const get = query({
@@ -18,7 +19,7 @@ export const get = query({
     // Fetch the user details from the database using Clerk ID
     const currentUser = await getUserByClerkId({
       ctx,
-      clerkId: identity.subject
+      clerkId: identity.subject,
     });
 
     // If the user is not found, throw a user not found error
@@ -56,7 +57,10 @@ export const get = query({
           .collect();
 
         // Fetch the last message details of the conversation
-        const lastMessage = await getLastMessageDetails({ctx, id: conversation.lastSeenMessageId});
+        const lastMessage = await getLastMessageDetails({
+          ctx,
+          id: conversation.lastSeenMessageId,
+        });
 
         // If the conversation is a group, return conversation and last message
         if (conversation.isGroup) {
@@ -78,44 +82,46 @@ export const get = query({
 
     // Return the conversation details along with additional information
     return conversationWithDetails;
-  }
+  },
 });
 
 // Helper function to fetch details of the last message in a conversation
-const getLastMessageDetails = async({
-  ctx, id
+const getLastMessageDetails = async ({
+  ctx,
+  id,
 }: {
-  ctx: QueryCtx | MutationCtx, id: Id<"messages"> | undefined;
+  ctx: QueryCtx | MutationCtx;
+  id: Id<"messages"> | undefined;
 }) => {
-  
   // If there is no last message ID, return null
-  if(!id){
+  if (!id) {
     return null;
   }
 
   // Fetch the last message from the database
   const message = await ctx.db.get(id);
-  if(!message){
+  if (!message) {
     return null;
   }
 
   // Fetch the sender's details of the message
   const sender = await ctx.db.get(message.senderId);
-  if(!sender){
+  if (!sender) {
     return null;
   }
 
   // Get the content of the message based on its type
   const content = getMessageContent(
-    message.type, message.content as unknown as string
+    message.type,
+    message.content as unknown as string
   );
 
   // Return the message content and sender's username
   return {
     content,
-    sender: sender.username
-  }
-}
+    sender: sender.username,
+  };
+};
 
 // Helper function to get the content of a message based on its type
 const getMessageContent = (type: string, content: string) => {
@@ -129,3 +135,146 @@ const getMessageContent = (type: string, content: string) => {
   }
 };
 
+export const createCommunityGroup = mutation({
+  args: {
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized");
+    }
+    const currentUser = await getUserByClerkId({
+      ctx,
+      clerkId: identity.subject,
+    });
+    if (!currentUser) {
+      throw new ConvexError("User not found");
+    }
+    const existingGroups = await ctx.db
+      .query("communityChatGroups")
+      .withIndex("by_ownerId", (q) => q.eq("ownerId", currentUser._id))
+      .collect();
+    if (existingGroups.length >= 5) {
+      throw new ConvexError(
+        "You can only create up to 5 community chat groups"
+      );
+    }
+    const conversationId = await ctx.db.insert("conversations", {
+      isGroup: true,
+      name: args.name,
+    });
+    await ctx.db.insert("communityChatGroups", {
+      name: args.name,
+      ownerId: currentUser._id,
+      members: [currentUser._id],
+      conversationId,
+    });
+    await ctx.db.insert("conversationMembers", {
+      memberId: currentUser._id,
+      conversationId,
+    });
+  },
+});
+
+export const joinCommunityGroup = mutation({
+  args: {
+    groupId: v.id("communityChatGroups"), // Correct table name
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized");
+    }
+    const currentUser = await getUserByClerkId({
+      ctx,
+      clerkId: identity.subject,
+    });
+    if (!currentUser) {
+      throw new ConvexError("User not found");
+    }
+    const group = await ctx.db.get(args.groupId);
+    if (!group) {
+      throw new ConvexError("Group not found");
+    }
+    if (!group.members.includes(currentUser._id)) {
+      await ctx.db.patch(args.groupId, {
+        members: [...group.members, currentUser._id],
+      });
+      await ctx.db.insert("conversationMembers", {
+        memberId: currentUser._id,
+        conversationId: group.conversationId,
+      });
+    }
+  },
+});
+
+export const deleteCommunityGroup = mutation({
+  args: {
+    groupId: v.id("communityChatGroups"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized");
+    }
+    const currentUser = await getUserByClerkId({
+      ctx,
+      clerkId: identity.subject,
+    });
+    if (!currentUser) {
+      throw new ConvexError("User not found");
+    }
+    const group = await ctx.db.get(args.groupId);
+    if (!group) {
+      throw new ConvexError("Group not found");
+    }
+    if (group.ownerId !== currentUser._id) {
+      throw new ConvexError("Only the owner can delete this group");
+    }
+    await ctx.db.delete(args.groupId);
+  },
+});
+
+export const getAllCommunityGroups = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized");
+    }
+    const currentUser = await getUserByClerkId({
+      ctx,
+      clerkId: identity.subject,
+    });
+    if (!currentUser) {
+      throw new ConvexError("User not found");
+    }
+    const groups = await ctx.db.query("communityChatGroups").collect();
+    return groups;
+  },
+});
+
+export const getUserMemberships = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized");
+    }
+    const currentUser = await getUserByClerkId({
+      ctx,
+      clerkId: identity.subject,
+    });
+    if (!currentUser) {
+      throw new ConvexError("User not found");
+    }
+    const memberships = await ctx.db
+      .query("conversationMembers")
+      .withIndex("by_memberId", (q) => q.eq("memberId", currentUser._id))
+      .collect();
+    return memberships.map((membership) => ({
+      groupId: membership.conversationId,
+    }));
+  },
+});

@@ -10,19 +10,39 @@ import { Avatar } from "@nextui-org/avatar";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { CircleArrowLeftIcon, Settings2Icon } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
+import LeaveGroupDialog from "./dialogs/LeaveGroupDialog";
+import DeleteGroupDialog from "./dialogs/DeletegroupDialogbox";
+import { Id } from "../../../../../../../convex/_generated/dataModel";
 
 type Props = {
   imageUrl?: string;
   name: string;
+  conversationId: Id<"conversations">;
   options?: {
     label: string;
     destructive: boolean;
     onClick: () => void;
   }[];
 };
+const Header = ({ imageUrl, name, conversationId, options }: Props) => {
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-const Header = ({ imageUrl, name, options }: Props) => {
+  const extendedOptions = [
+    ...(options || []),
+    {
+      label: "Leave Group",
+      destructive: true,
+      onClick: () => setLeaveDialogOpen(true),
+    },
+    {
+      label: "Delete Group",
+      destructive: true,
+      onClick: () => setDeleteDialogOpen(true),
+    },
+  ];
+
   return (
     <>
       <Card className="w-full  p-2 flex rounded-lg items-center justify-between">
@@ -34,7 +54,7 @@ const Header = ({ imageUrl, name, options }: Props) => {
           <h2 className="font-semibold truncate">{name}</h2>
         </div>
         <div className="flex gap-2">
-          {options ? (
+          {extendedOptions ? (
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Button size={"icon"} variant="secondary">
@@ -42,7 +62,7 @@ const Header = ({ imageUrl, name, options }: Props) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {options.map((option, id) => {
+                {extendedOptions.map((option, id) => {
                   return (
                     <DropdownMenuItem
                       key={option.label}
@@ -60,6 +80,16 @@ const Header = ({ imageUrl, name, options }: Props) => {
           ) : null}
         </div>
       </Card>
+      <LeaveGroupDialog
+        conversationId={conversationId}
+        open={leaveDialogOpen}
+        setOpen={setLeaveDialogOpen}
+      />
+      <DeleteGroupDialog
+        conversationId={conversationId}
+        open={deleteDialogOpen}
+        setOpen={setDeleteDialogOpen}
+      />
     </>
   );
 };
