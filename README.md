@@ -149,7 +149,10 @@ vybe/
 ---
 
 ## 📄 License
-This project is licensed under the MIT License.
+![License](https://img.shields.io/badge/License-CreativeCommons%20BY--NC%204.0%20International-blue)
+
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.
+For more details, see the [LICENSE](./LICENSE) file.
 
 ---
 
