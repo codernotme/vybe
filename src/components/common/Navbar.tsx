@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, Settings2, LogOut, Menu, X } from "lucide-react";
+import { Search, Settings2, LogOut, Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@nextui-org/button";
 import { Input } from "@/components/ui/input";
 import { Avatar } from "@nextui-org/avatar";
@@ -22,11 +22,16 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useTheme } from "next-themes";
 import Navbarcontent from "./navbar-content";
+import AddFriendDialog from "./AddFriendDialog";
+import NavbarConvo from "./NavbarChat";
+import NavbarAnonymous from "./NavAnony";
+import Notification from "../notification/page";
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const user = useQuery(api.users.get);
   const [mounted, setMounted] = useState(false);
-  const { theme } = useTheme(); // Get the current theme
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -35,81 +40,120 @@ export default function Navbar() {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <nav
-      className={`relative overflow-hidden border-b bg-background ${theme === "dark" ? "border-gray-800" : "border-gray-300"}`}
+    <motion.nav
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className={`sticky top-0 z-50 backdrop-blur-md bg-background/80 border-b ${
+        theme === "dark" ? "border-gray-800" : "border-gray-300"
+      }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center"
+          >
             <Link href="/" className="flex-shrink-0">
-              <h1 className="text-2xl font-bold md:text-3xl logo">VYBE </h1>
+              <h1 className="text-2xl font-bold md:text-3xl logo bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+                VYBE
+              </h1>
             </Link>
           </motion.div>
 
           {/* Search & Nav Items (Desktop) */}
-          <div className="hidden md:flex items-center gap-4 p-2">
-            <div className="flex items-center gap-4">
-              <motion.div
-                className="relative w-full max-w-[400px]"
-                whileHover={{ scale: 1.02 }}
-              >
-                <Search
-                  className={`absolute left-3 top-3 h-4 w-4 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
-                />
-                <Input
-                  type="search"
-                  placeholder="Search for people etc..."
-                  className={`w-full pl-10 rounded-lg focus-visible:ring-2 focus-visible:ring-blue-500 ${theme === "dark" ? "bg-secondary border-gray-700 text-white placeholder-gray-400" : "bg-white border-gray-300 text-black placeholder-gray-500"}`}
-                  aria-label="Search"
-                />
-              </motion.div>
-              <Navbarcontent />
-              <TButton />
-            </div>
+          <div className="hidden md:flex items-center gap-4">
+            <motion.div
+              className="relative w-64 lg:w-80"
+              whileHover={{ scale: 1.02 }}
+            >
+              <Search
+                className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${
+                  theme === "dark" ? "text-gray-400" : "text-gray-600"
+                }`}
+              />
+              <Input
+                type="search"
+                placeholder="Search..."
+                className={`w-full pl-10 pr-4 py-2 rounded-full focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                  theme === "dark"
+                    ? "bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+                    : "bg-white border-gray-300 text-black placeholder-gray-500"
+                }`}
+                aria-label="Search"
+              />
+            </motion.div>
+            <Navbarcontent />
+            <TButton />
+          </div>
+
+          {/* User Menu (Desktop) */}
+          <div className="hidden md:flex items-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <motion.div
+                <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  className="flex items-center space-x-2 cursor-pointer focus:outline-none"
                 >
                   <Avatar
-                    className={`h-[40px] w-[40px] rounded-full cursor-pointer border-2 ${theme === "dark" ? "border-blue-500" : "border-blue-600"}`}
+                    className={`h-8 w-8 rounded-full border-2 ${
+                      theme === "dark" ? "border-blue-500" : "border-blue-600"
+                    }`}
                     src={user?.imageUrl}
                     alt={user?.username}
                   />
-                </motion.div>
+                  <span className="hidden lg:inline-block font-medium">
+                    {user?.name}
+                  </span>
+                  <ChevronDown className="h-4 w-4" />
+                </motion.button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className={`bg-gray-900 border border-gray-700 ${theme === "dark" ? "text-gray-300" : "bg-white text-black"}`}
+                className={`w-56 p-2 ${
+                  theme === "dark"
+                    ? "bg-gray-900 border border-gray-700 text-gray-300"
+                    : "bg-white border border-gray-200 text-black"
+                }`}
               >
                 <DropdownMenuLabel>
                   <p className="font-semibold">Signed in as</p>
                   <p
-                    className={`font-semibold ${theme === "dark" ? "text-blue-400" : "text-blue-600"}`}
+                    className={`font-semibold ${
+                      theme === "dark" ? "text-blue-400" : "text-blue-600"
+                    }`}
                   >
                     {user?.email}
                   </p>
                 </DropdownMenuLabel>
-                <DropdownMenuItem>
-                  <Button
-                    className={`w-full rounded-lg shadow-black ${theme === "dark" ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"}`}
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/dashboard"
+                    className={`flex items-center px-2 py-2 text-sm rounded-md ${
+                      theme === "dark"
+                        ? "hover:bg-gray-800"
+                        : "hover:bg-gray-100"
+                    }`}
                   >
-                    <Link href="/dashboard" className="flex items-center">
-                      <Settings2 className="mr-2 h-4 w-4" />
-                      My Settings
-                    </Link>
-                  </Button>
+                    <Settings2 className="mr-2 h-4 w-4" />
+                    My Settings
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <SignOutButton>
-                    <Button
-                      className={`w-full rounded-lg shadow-black ${theme === "dark" ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600"}`}
+                    <button
+                      className={`flex items-center w-full px-2 py-2 text-sm rounded-md ${
+                        theme === "dark"
+                          ? "hover:bg-gray-800 text-red-400"
+                          : "hover:bg-gray-100 text-red-600"
+                      }`}
                     >
                       <LogOut className="mr-2 h-4 w-4" />
                       Log out
-                    </Button>
+                    </button>
                   </SignOutButton>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -117,13 +161,17 @@ export default function Navbar() {
           </div>
 
           {/* Hamburger Menu (Mobile) */}
-          <div className="-mr-2 flex md:hidden">
+          <div className="flex md:hidden">
             <Sheet>
               <SheetTrigger asChild>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700" `}
+                  className={`inline-flex items-center justify-center p-2 rounded-md ${
+                    theme === "dark"
+                      ? "text-gray-400 hover:text-white hover:bg-gray-700"
+                      : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+                  }`}
                   onClick={toggleMenu}
                 >
                   <span className="sr-only">Open main menu</span>
@@ -154,51 +202,84 @@ export default function Navbar() {
               </SheetTrigger>
               <SheetContent
                 side="right"
-                className={`w-[300px] sm:w-[400px] ${theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-black"}`}
+                className={`w-full sm:w-80 ${
+                  theme === "dark"
+                    ? "bg-gray-900 text-white"
+                    : "bg-white text-black"
+                }`}
               >
-                <nav className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                  <div className="relative w-full max-w-[400px] mb-4">
-                    <Search
-                      className={`absolute left-3 top-3 h-4 w-4 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
-                    />
-                    <Input
-                      type="search"
-                      placeholder="Search for people etc..."
-                      className={`w-full pl-10 rounded-lg focus-visible:ring-2 focus-visible:ring-blue-500 ${theme === "dark" ? "bg-gray-800 border-gray-700 text-white placeholder-gray-400" : "bg-white border-gray-300 text-black placeholder-gray-500"}`}
-                      aria-label="Search"
-                    />
-                  </div>
-                  <Navbarcontent />
-                  <div className="pt-4 pb-3 border-t border-gray-700">
-                    <div className="flex items-center px-2">
-                      <div className="ml-3">
-                        <div
-                          className={`text-base font-medium leading-none ${theme === "dark" ? "text-white" : "text-black"}`}
-                        >
-                          {user?.name}
-                        </div>
-                        <div
-                          className={`text-sm font-medium leading-none ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}
-                        >
-                          {user?.email}
+                <nav className="flex flex-col h-full">
+                <div className="flex flex-row p-2 space-evenly">
+                      <TButton />
+                      <Notification/>
+                    </div>
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="px-4 py-6">
+                      <div className="flex items-center mb-6">
+                        <Avatar
+                          className={`h-10 w-10 rounded-full border-2 ${
+                            theme === "dark"
+                              ? "border-blue-500"
+                              : "border-blue-600"
+                          }`}
+                          src={user?.imageUrl}
+                          alt={user?.username}
+                        />
+                        <div className="ml-3">
+                          <div className="font-medium">{user?.name}</div>
+                          <div className="text-sm text-gray-500">
+                            {user?.email}
+                          </div>
                         </div>
                       </div>
+                      <div className="relative mb-6">
+                        <Search
+                          className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${
+                            theme === "dark" ? "text-gray-400" : "text-gray-600"
+                          }`}
+                        />
+                        <Input
+                          type="search"
+                          placeholder="Search..."
+                          className={`w-full pl-10 pr-4 py-2 rounded-full focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                            theme === "dark"
+                              ? "bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+                              : "bg-white border-gray-300 text-black placeholder-gray-500"
+                          }`}
+                          aria-label="Search"
+                        />
+                      </div>
+                      <div className="flex flex-row gap-2 align-middle items-center justify-between">
+                        <AddFriendDialog />
+                        <NavbarConvo />
+                        <NavbarAnonymous />
+                      </div>
                     </div>
-                    <div className="mt-3 px-2 space-y-1">
-                      <Button
-                        className={`w-full rounded-lg shadow-black mt-2 ${theme === "dark" ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"}`}
+                  </div>
+                  <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+                    <Link
+                      href="/dashboard"
+                      className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${
+                        theme === "dark"
+                          ? "text-gray-300 hover:bg-gray-700"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                    >
+                      <Settings2 className="mr-3 h-5 w-5" />
+                      My Settings
+                    </Link>
+                    <SignOutButton>
+                      <button
+                        className={`flex items-center w-full px-4 py-2 mt-2 text-sm font-medium rounded-md ${
+                          theme === "dark"
+                            ? "text-red-400 hover:bg-gray-700"
+                            : "text-red-600 hover:bg-gray-100"
+                        }`}
                       >
-                        <Link href="/dashboard">My Settings</Link>
-                      </Button>
-                      <SignOutButton>
-                        <Button
-                          variant="solid"
-                          className={`w-full rounded-lg shadow-black mt-2 ${theme === "dark" ? "bg-red-600 hover:bg-red-700" : "bg-red-500 hover:bg-red-600"}`}
-                        >
-                          Log out
-                        </Button>
-                      </SignOutButton>
-                    </div>
+                        <LogOut className="mr-3 h-5 w-5" />
+                        Log out
+                      </button>
+                    </SignOutButton>
                   </div>
                 </nav>
               </SheetContent>
@@ -206,6 +287,6 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 }
