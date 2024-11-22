@@ -103,6 +103,16 @@ export const addProjectChatMessage = mutation({
     const isAuthorized = await isUserAuthorizedForProject(ctx, projectId, senderId);
     if (!isAuthorized) return null;
 
+    // Check if the user already has a workspace for this project
+    const existingWorkspace = await ctx.db
+      .query("projectWorkspaces")
+      .filter((q) => q.eq(q.field("ownerId"), senderId))
+      .first();
+
+    if (existingWorkspace) {
+      throw new Error("User already has a workspace for this project");
+    }
+
     return await ctx.db.insert("projectChats", {
       projectId,
       senderId,
@@ -120,6 +130,16 @@ export const addTodo = mutation({
     completed: v.boolean(),
   },
   handler: async (ctx, { projectId, creatorId, content, completed }) => {
+    // Check if the user already has a workspace for this project
+    const existingWorkspace = await ctx.db
+      .query("projectWorkspaces")
+      .filter((q) => q.and(q.eq(q.field("ownerId"), creatorId), q.eq(q.field("repoName"), projectId)))
+      .first();
+
+    if (existingWorkspace) {
+      throw new Error("User already has a workspace for this project");
+    }
+
     try {
       return await ctx.db.insert("projectTodos", {
         projectId,
