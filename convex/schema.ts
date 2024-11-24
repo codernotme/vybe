@@ -1,5 +1,5 @@
-import { defineSchema, defineTable } from "convex/server"; // Ensure this import is correct
-import { v } from "convex/values"; // Ensure this import is correct
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
 import { user } from '@nextui-org/react';
 
 export default defineSchema({
@@ -179,9 +179,10 @@ export default defineSchema({
 
   // Define the "events" table to store event information
   events: defineTable({
+    id: v.optional(v.id("events")), // ID of the event
     title: v.string(), // Title of the event
     description: v.string(), // Description of the event
-    date: v.string(), // Date of the event
+    date: v.number(), // Date of the event
     location: v.string(), // Location of the event
     createdBy: v.optional(v.id("users")), // ID of the user who created the event
     attendees: v.optional(v.array(v.id("users"))), // Optional array of user IDs who are attending the event
