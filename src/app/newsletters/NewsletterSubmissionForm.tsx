@@ -1,40 +1,86 @@
 "use client";
-import React, { useState } from "react";
 
-const NewsletterSubmissionForm: React.FC = () => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const formSchema = z.object({
+  title: z.string().min(2, {
+    message: "Title must be at least 2 characters.",
+  }),
+  content: z.string().min(10, {
+    message: "Content must be at least 10 characters.",
+  }),
+});
+
+export default function NewsletterSubmissionForm() {
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      content: "",
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
     // Backend function call to submit blog entry (add your API call here)
-    // await submitBlog({ title, content });
-    alert("Blog submitted for approval.");
-    setTitle("");
-    setContent("");
-  };
+    // await submitBlog(values);
+    toast({
+      title: "Blog submitted for approval",
+      description: "Your blog post has been submitted successfully.",
+    });
+    form.reset();
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="form">
-      <h2>Submit a Blog Post</h2>
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Blog Title"
-        required
-        className="input"
-      />
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Write your blog content..."
-        required
-        className="textarea"
-      />
-      <button type="submit" className="button">Submit</button>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Blog Title</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your blog title" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="content"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Blog Content</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Write your blog content..."
+                  className="min-h-[200px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
   );
-};
-
-export default NewsletterSubmissionForm;
+}

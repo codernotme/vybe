@@ -1,5 +1,17 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast"
 
 interface BlogPost {
   id: string;
@@ -8,35 +20,69 @@ interface BlogPost {
   author: string;
 }
 
-const AdminDashboard: React.FC = () => {
+export function AdminDashboard() {
+  const { toast } = useToast()
   const [pendingBlogs, setPendingBlogs] = useState<BlogPost[]>([]);
 
   useEffect(() => {
     // Fetch pending blog posts from backend (replace with actual data fetch)
-    // setPendingBlogs(data);
+    // For demonstration, we'll use dummy data
+    setPendingBlogs([
+      {
+        id: "1",
+        title: "Pending Blog Post 1",
+        content: "This is a pending blog post.",
+        author: "John Doe",
+      },
+      {
+        id: "2",
+        title: "Pending Blog Post 2",
+        content: "This is another pending blog post.",
+        author: "Jane Smith",
+      },
+    ]);
   }, []);
 
   const handleApproval = async (blogId: string, approved: boolean) => {
     // Call backend function to update blog approval status
     // await approveBlog({ blogId, approved });
-    alert(`Blog ${approved ? "approved" : "rejected"}.`);
-    setPendingBlogs(pendingBlogs.filter(blog => blog.id !== blogId));
+    toast({
+      title: `Blog ${approved ? "approved" : "rejected"}`,
+      description: `The blog post has been ${approved ? "approved" : "rejected"}.`,
+    });
+    setPendingBlogs(pendingBlogs.filter((blog) => blog.id !== blogId));
   };
 
   return (
-    <div>
-      <h2>Admin Dashboard</h2>
-      {pendingBlogs.map((blog) => (
-        <div key={blog.id} className="blog-post">
-          <h3>{blog.title}</h3>
-          <p>{blog.content}</p>
-          <p>Author: {blog.author}</p>
-          <button onClick={() => handleApproval(blog.id, true)} className="approve-btn">Approve</button>
-          <button onClick={() => handleApproval(blog.id, false)} className="reject-btn">Reject</button>
-        </div>
-      ))}
-    </div>
+    <ScrollArea className="h-[400px] w-full rounded-md border p-4">
+      <h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
+      <div className="space-y-4">
+        {pendingBlogs.map((blog) => (
+          <Card key={blog.id}>
+            <CardHeader>
+              <CardTitle>{blog.title}</CardTitle>
+              <CardDescription>By {blog.author}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>{blog.content}</p>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <Button
+                onClick={() => handleApproval(blog.id, true)}
+                variant="default"
+              >
+                Approve
+              </Button>
+              <Button
+                onClick={() => handleApproval(blog.id, false)}
+                variant="destructive"
+              >
+                Reject
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    </ScrollArea>
   );
-};
-
-export default AdminDashboard;
+}

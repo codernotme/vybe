@@ -1,33 +1,57 @@
-"use client";
-import React, { useState, useEffect } from "react";
+"use client"
+
+import React, { useState, useEffect } from "react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 interface BlogPost {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
+  id: string
+  title: string
+  content: string
+  author: string
 }
 
-const BlogFeed: React.FC = () => {
-  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+export default function BlogFeed() {
+  const [blogs, setBlogs] = useState<BlogPost[]>([])
 
   useEffect(() => {
     // Fetch approved blog posts from backend (replace with actual data fetch)
     // setBlogs(approvedBlogs);
-  }, []);
+    // For now, let's use some dummy data
+    setBlogs([
+      {
+        id: "1",
+        title: "Getting Started with Next.js",
+        content: "Next.js is a powerful React framework...",
+        author: "John Doe",
+      },
+      {
+        id: "2",
+        title: "The Future of AI",
+        content: "Artificial Intelligence is rapidly evolving...",
+        author: "Jane Smith",
+      },
+    ])
+  }, [])
 
   return (
-    <div>
-      <h2>VYBE Newsletter</h2>
+    <div className="space-y-6">
       {blogs.map((blog) => (
-        <div key={blog.id} className="blog-post">
-          <h3>{blog.title}</h3>
-          <p>{blog.content}</p>
-          <p>Author: {blog.author}</p>
-        </div>
+        <Card key={blog.id}>
+          <CardHeader>
+            <CardTitle>{blog.title}</CardTitle>
+            <CardDescription>By {blog.author}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>{blog.content}</p>
+          </CardContent>
+        </Card>
       ))}
     </div>
-  );
-};
-
-export default BlogFeed;
+  )
+}

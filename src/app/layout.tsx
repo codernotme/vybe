@@ -96,7 +96,7 @@ export default function RootLayout({
                 </SignedOut>
               </TooltipProvider>
               {/* Toast notifications provider */}
-              <Toaster richColors />
+              <Toaster/>
             </Providers>
           </ThemeProvider>
         </body>
