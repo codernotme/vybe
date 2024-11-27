@@ -1,6 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { user } from '@nextui-org/react';
+import { user } from "@nextui-org/react";
 
 export default defineSchema({
   // Define the "users" table to store user information
@@ -123,17 +123,18 @@ export default defineSchema({
     senderId: v.id("users"), // The ID of the user who sent the message
     content: v.string(), // Chat message content
   }).index("by_projectId", ["projectId"]),
-
-  // Define the "newsletters" table for blog submissions
-  newsletters: defineTable({
-    title: v.string(),            // Title of the blog post
-    content: v.string(),          // Content of the blog post
-    authorId: v.id("users"),      // ID of the user (mentor or community member) who wrote the blog
-    createdAt: v.number(),        // Timestamp for when the blog was created
-    approved: v.boolean(), // Approval status for the blog post (default is false)
+  // Define the "blog" table for blog submissions
+  // Define the "blog" table for blog submissions
+  blog: defineTable({
+    title: v.string(), // Title of the blog post
+    content: v.string(), // Content of the blog post
+    authorId: v.id("users"), // ID of the user (mentor or community member) who wrote the blog
+    createdAt: v.number(), // Timestamp for when the blog was created
+    state: v.string(), // State of the blog post (e.g., "pending", "approved", "rejected")
   })
-    .index("by_authorId", ["authorId"])         // Index for fetching all posts by a specific author
-    .index("by_approval_status", ["approved"]), // Index for fetching posts based on approval status
+    .index("by_authorId", ["authorId"]) // Index for fetching all posts by a specific author
+    .index("by_state", ["state"]) // Index for fetching posts based on state
+    .index("by_createdAt", ["createdAt"]), // Index for fetching posts in chronological order
 
   //Anonymous chats
   anonymousChat: defineTable({
@@ -142,8 +143,7 @@ export default defineSchema({
     randomUser: v.optional(v.string()), // Add randomUser field
     timestamp: v.number(),
     anonymousUsername: v.string(), // Add anonymousUsername field
-  })
-    .index("by_userId", ["userId"]),
+  }).index("by_userId", ["userId"]),
 
   //Anonymous Post
   anonymousPost: defineTable({
@@ -157,8 +157,7 @@ export default defineSchema({
     pdfUrl: v.optional(v.string()), // Add pdfUrl field
     anonymousUsername: v.string(), // Add anonymousUsername field
     _creationTime: v.number(), // Change _creationTime field to number
-  })
-    .index("by_userId", ["userId"]),
+  }).index("by_userId", ["userId"]),
 
   // Define the "anonymousComments" table to store comments on anonymous posts
   anonymousComments: defineTable({
@@ -194,7 +193,5 @@ export default defineSchema({
     ownerId: v.id("users"),
     members: v.array(v.id("users")),
     conversationId: v.id("conversations"),
-  })
-    .index("by_ownerId", ["ownerId"]),
+  }).index("by_ownerId", ["ownerId"]),
 });
-

@@ -25,6 +25,7 @@ import type * as github from "../github.js";
 import type * as http from "../http.js";
 import type * as message from "../message.js";
 import type * as messages from "../messages.js";
+import type * as newsletter from "../newsletter.js";
 import type * as post from "../post.js";
 import type * as posts from "../posts.js";
 import type * as request from "../request.js";
@@ -56,6 +57,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   message: typeof message;
   messages: typeof messages;
+  newsletter: typeof newsletter;
   post: typeof post;
   posts: typeof posts;
   request: typeof request;

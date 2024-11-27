@@ -1,6 +1,5 @@
 "use client";
-
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -16,6 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -28,6 +29,10 @@ const formSchema = z.object({
 
 export default function NewsletterSubmissionForm() {
   const { toast } = useToast();
+  const user = useQuery(api.users.get);
+  const userLoading = !user;
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -36,14 +41,39 @@ export default function NewsletterSubmissionForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Backend function call to submit blog entry (add your API call here)
-    // await submitBlog(values);
-    toast({
-      title: "Blog submitted for approval",
-      description: "Your blog post has been submitted successfully.",
-    });
-    form.reset();
+  const submitBlog = useMutation(api.newsletter.submitNewsletter);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user || userLoading) {
+      toast({
+        title: "User not found",
+        description: "Please log in before submitting a newsletter.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await submitBlog({
+        title: values.title,
+        content: values.content,
+        authorId: user._id, // Ensure user ID is passed correctly
+      });
+      toast({
+        title: "Newsletter submitted",
+        description: "Your newsletter has been submitted for approval.",
+      });
+      form.reset();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An error occurred while submitting your newsletter.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -54,9 +84,9 @@ export default function NewsletterSubmissionForm() {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Blog Title</FormLabel>
+              <FormLabel>Newsletter Title</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your blog title" {...field} />
+                <Input placeholder="Enter your newsletter title" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -67,10 +97,10 @@ export default function NewsletterSubmissionForm() {
           name="content"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Blog Content</FormLabel>
+              <FormLabel>Newsletter Content</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Write your blog content..."
+                  placeholder="Write your newsletter content..."
                   className="min-h-[200px]"
                   {...field}
                 />
@@ -79,7 +109,9 @@ export default function NewsletterSubmissionForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={loading || userLoading}>
+          {loading ? "Submitting..." : "Submit"}
+        </Button>
       </form>
     </Form>
   );

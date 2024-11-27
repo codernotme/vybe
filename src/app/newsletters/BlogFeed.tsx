@@ -1,57 +1,53 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react";
 import {
   Card,
-  CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-
-interface BlogPost {
-  id: string
-  title: string
-  content: string
-  author: string
-}
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 export default function BlogFeed() {
-  const [blogs, setBlogs] = useState<BlogPost[]>([])
+  const [users, setUsers] = useState<any[]>([]);
+  const approvedblog = useQuery(api.newsletter.fetchBlogByState, {
+    state: "approved",
+  });
+  
+  // Fetch all users only when necessary (to avoid unnecessary re-renders)
+  const allUsers = useQuery(api.users.get);
 
   useEffect(() => {
-    // Fetch approved blog posts from backend (replace with actual data fetch)
-    // setBlogs(approvedBlogs);
-    // For now, let's use some dummy data
-    setBlogs([
-      {
-        id: "1",
-        title: "Getting Started with Next.js",
-        content: "Next.js is a powerful React framework...",
-        author: "John Doe",
-      },
-      {
-        id: "2",
-        title: "The Future of AI",
-        content: "Artificial Intelligence is rapidly evolving...",
-        author: "Jane Smith",
-      },
-    ])
-  }, [])
+    if (Array.isArray(allUsers)) {
+      setUsers(allUsers);
+    }
+  }, [allUsers]);
+
+  // Handle loading state for both queries
+  if (!approvedblog || approvedblog.length === 0) {
+    return <p>No approved blogs yet.</p>;
+  }
 
   return (
     <div className="space-y-6">
-      {blogs.map((blog) => (
-        <Card key={blog.id}>
-          <CardHeader>
-            <CardTitle>{blog.title}</CardTitle>
-            <CardDescription>By {blog.author}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p>{blog.content}</p>
-          </CardContent>
-        </Card>
-      ))}
+      {approvedblog.map((newsletter) => {
+        // Find the author for each newsletter using the 'users' state
+        const author = users.find((user) => user._id === newsletter.authorId);
+        return (
+          <Card key={newsletter._id}>
+            <CardHeader>
+              <CardTitle>{newsletter.title}</CardTitle>
+              <CardDescription>By {author?.username || "Unknown"}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>{newsletter.content}</p>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
-  )
+  );
 }
