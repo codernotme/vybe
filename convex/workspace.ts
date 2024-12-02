@@ -103,16 +103,6 @@ export const addProjectChatMessage = mutation({
     const isAuthorized = await isUserAuthorizedForProject(ctx, projectId, senderId);
     if (!isAuthorized) return null;
 
-    // Check if the user already has a workspace for this project
-    const existingWorkspace = await ctx.db
-      .query("projectWorkspaces")
-      .filter((q) => q.eq(q.field("ownerId"), senderId))
-      .first();
-
-    if (existingWorkspace) {
-      throw new Error("User already has a workspace for this project");
-    }
-
     return await ctx.db.insert("projectChats", {
       projectId,
       senderId,
@@ -130,15 +120,8 @@ export const addTodo = mutation({
     completed: v.boolean(),
   },
   handler: async (ctx, { projectId, creatorId, content, completed }) => {
-    // Check if the user already has a workspace for this project
-    const existingWorkspace = await ctx.db
-      .query("projectWorkspaces")
-      .filter((q) => q.and(q.eq(q.field("ownerId"), creatorId), q.eq(q.field("repoName"), projectId)))
-      .first();
-
-    if (existingWorkspace) {
-      throw new Error("User already has a workspace for this project");
-    }
+    const isAuthorized = await isUserAuthorizedForProject(ctx, projectId, creatorId);
+    if (!isAuthorized) return null;
 
     try {
       return await ctx.db.insert("projectTodos", {
@@ -232,28 +215,31 @@ export const inviteUser = mutation({
 });
 
 // Allow users to leave a workspace
-// export const leaveWorkspace = mutation({
-//   args: { projectId: v.id("projectWorkspaces"), userId: v.id("users") },
-//   handler: async (ctx, { projectId, userId }) => {
-//     try {
-//       await ctx.db
-//         .query("projectMembers")
-//         .filter((q) =>
-//           q.and(
-//             q.eq(q.field("projectId"), projectId),
-//             q.eq(q.field("memberId"), userId)
-//           )
-//         )
-//         .remove();
-//     } catch (error) {
-//       console.error("Error leaving workspace:", error);
-//       throw new Error("Failed to leave workspace");
-//     }
-//   },
-// });
+export const leaveWorkspace = mutation({
+  args: { projectId: v.id("projectWorkspaces"), userId: v.id("users") },
+  handler: async (ctx, { projectId, userId }) => {
+    try {
+      const member = await ctx.db
+        .query("projectMembers")
+        .filter((q) =>
+          q.and(
+            q.eq(q.field("projectId"), projectId),
+            q.eq(q.field("memberId"), userId)
+          )
+        )
+        .first();
 
-
-
+      if (member) {
+        await ctx.db.delete(member._id);
+      } else {
+        throw new Error("Member not found");
+      }
+    } catch (error) {
+      console.error("Error leaving workspace:", error);
+      throw new Error("Failed to leave workspace");
+    }
+  },
+});
 
 // Fetch all workspaces that a user is a member of or owns
 export const getUserWorkspaces = query({

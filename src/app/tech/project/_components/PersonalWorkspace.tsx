@@ -19,6 +19,7 @@ const PersonalWorkspace: React.FC<PersonalWorkspaceProps> = ({ projectId, userId
   const router = useRouter();
   const chatMessages = useQuery(api.workspace.fetchProjectChatMessages, { projectId, userId });
   const addMessage = useMutation(api.workspace.addProjectChatMessage);
+  const leaveWorkspace = useMutation(api.workspace.leaveWorkspace);
   const [newMessage, setNewMessage] = useState("");
 
   const projectDetails = useQuery(api.workspace.getProjectWorkspace, { projectId, userId });
@@ -34,6 +35,11 @@ const PersonalWorkspace: React.FC<PersonalWorkspaceProps> = ({ projectId, userId
       await addMessage({ projectId, senderId: userId, content: newMessage });
       setNewMessage("");
     }
+  };
+
+  const handleLeaveWorkspace = async () => {
+    await leaveWorkspace({ projectId, userId });
+    router.push("/tech/project");
   };
 
   if (!isAuthorized) {
@@ -68,6 +74,7 @@ const PersonalWorkspace: React.FC<PersonalWorkspaceProps> = ({ projectId, userId
           placeholder="Type a message"
         />
         <Button onClick={handleAddMessage}>Send</Button>
+        <Button onClick={handleLeaveWorkspace}>Leave Workspace</Button>
         </CardFooter>
       </Card>
       <div>
