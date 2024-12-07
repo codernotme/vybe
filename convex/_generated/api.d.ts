@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as _utils from "../_utils.js";
 import type * as anonymousChat from "../anonymousChat.js";
 import type * as anonymousPost from "../anonymousPost.js";
 import type * as conversation from "../conversation.js";
@@ -34,7 +35,6 @@ import type * as roles from "../roles.js";
 import type * as user from "../user.js";
 import type * as users from "../users.js";
 import type * as workspace from "../workspace.js";
-import type * as _utils from "../_utils.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -45,6 +45,7 @@ import type * as _utils from "../_utils.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  _utils: typeof _utils;
   anonymousChat: typeof anonymousChat;
   anonymousPost: typeof anonymousPost;
   conversation: typeof conversation;
@@ -66,7 +67,6 @@ declare const fullApi: ApiFromModules<{
   user: typeof user;
   users: typeof users;
   workspace: typeof workspace;
-  _utils: typeof _utils;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
