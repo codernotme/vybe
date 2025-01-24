@@ -1,6 +1,6 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { WebhookEvent } from "@clerk/clerk-sdk-node"; // Import Clerk WebhookEvent type
+import { WebhookEvent } from '@clerk/nextjs/server'
 import { Webhook, WebhookRequiredHeaders } from "svix"; // Import Svix for validating Clerk webhooks
 import { internal } from "./_generated/api";
 
